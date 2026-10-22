@@ -14,7 +14,7 @@ Este repo convierte a Claude Code en un co-docente que conoce el modelo educativ
 ## Instalación
 
 ```bash
-git clone [CONFIRMAR: URL del repo] profe-virtual
+git clone https://github.com/carsimax/profe-virtual-utez.git profe-virtual
 cd profe-virtual
 uv sync                               # crea .venv con Python 3.12 y las dependencias
 uv run playwright install chromium    # navegador para revisar decks y diagramas
