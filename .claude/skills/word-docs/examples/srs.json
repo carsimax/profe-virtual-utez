@@ -1,0 +1,68 @@
+{
+ "preset": "tecnico",
+ "cover": true,
+ "numberedHeadings": true,
+ "meta": {
+  "title": "Especificación de requisitos de software",
+  "subtitle": "Sistema de préstamo de laboratorio · v1.0",
+  "kicker": "SRS",
+  "institution": "Devos Team",
+  "fields": [
+   [
+    "Proyecto",
+    "LabTrack"
+   ],
+   [
+    "Versión",
+    "1.0"
+   ],
+   [
+    "Estado",
+    "Borrador"
+   ],
+   [
+    "Fecha",
+    "15/10/2026"
+   ]
+  ]
+ },
+ "front": [
+  {
+   "type": "toc",
+   "levels": 2
+  }
+ ],
+ "body": [
+  "# Introducción\n\n## Propósito\n\nDescribir los requisitos funcionales y no funcionales de LabTrack.\n\n## Alcance\n\n- Reservas de laboratorio\n- Notificaciones\n- Reportes",
+  "# Requisitos funcionales",
+  {
+   "type": "table",
+   "caption": "Requisitos funcionales",
+   "headers": [
+    "ID",
+    "Requisito",
+    "Prioridad"
+   ],
+   "widths": [
+    0.6,
+    4,
+    1
+   ],
+   "rows": [
+    [
+     "RF-01",
+     "El docente reserva un laboratorio por bloque horario.",
+     "Alta"
+    ],
+    [
+     "RF-02",
+     "El sistema notifica conflictos de horario.",
+     "Media"
+    ]
+   ]
+  },
+  "> [!warn] Restricción\n> Las reservas se cierran 24 h antes.",
+  "## Modelo de datos\n\n```sql\nCREATE TABLE reserva (\n  id SERIAL PRIMARY KEY,\n  lab_id INT NOT NULL\n);\n```",
+  "# Requisitos no funcionales\n\n| Atributo | Métrica |\n|---|---:|\n| Disponibilidad | 99.5 % |\n| Tiempo de respuesta | < 300 ms |"
+ ]
+}

@@ -1,0 +1,43 @@
+[project]
+name = "cmx-teach"
+version = "0.1.0"
+description = "Deterministic tooling for Profe Virtual UTEZ (slides today; grading later)."
+requires-python = ">=3.12"
+dependencies = [
+    "playwright",
+    "python-pptx",
+    "pillow",
+    "python-docx>=1.2.0",
+    "lxml>=6.1.3",
+    "docxtpl>=0.20.2",
+    "firecrawl-anydoc>=0.2.4",
+]
+
+[project.scripts]
+slides-qa = "cmx_teach.slides.qa:main"
+slides-mermaid = "cmx_teach.slides.mermaid:main"
+slides-pptx = "cmx_teach.slides.pptx:main"
+slides-inline-images = "cmx_teach.slides.inline_images:main"
+slides-chart = "cmx_teach.slides.charts:main"
+mermaid-check = "cmx_teach.diagrams.mermaid_check:main"
+svg-check = "cmx_teach.diagrams.svg_check:main"
+docs-build = "cmx_teach.docs.build:main"
+docs-visuals = "cmx_teach.docs.visuals:main"
+docs-qa = "cmx_teach.docs.qa:main"
+docs-fill = "cmx_teach.docs.fill:main"
+docs-to-md = "cmx_teach.convert.to_md:main"
+course-lint = "cmx_teach.course.lint:main"
+teach-hook = "cmx_teach.course.hooks:main"
+
+[dependency-groups]
+dev = ["pytest"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cmx_teach"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

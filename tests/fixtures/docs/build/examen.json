@@ -1,0 +1,133 @@
+{
+ "preset": "utez",
+ "page": "letter",
+ "lang": "es-MX",
+ "cover": false,
+ "meta": {
+  "title": "Examen de la unidad 2: Herencia y polimorfismo",
+  "institution": "Universidad Tecnológica Emiliano Zapata del Estado de Morelos",
+  "department": "División Académica de Tecnologías de la Información y Comunicación",
+  "course": "Programación Orientada a Objetos",
+  "teacher": "[DATO PENDIENTE]",
+  "headerText": "POO · Examen unidad 2"
+ },
+ "body": [
+  {
+   "type": "h1",
+   "text": "Examen de la unidad 2: Herencia y polimorfismo"
+  },
+  {
+   "type": "questions",
+   "showAnswers": false,
+   "showTotal": true,
+   "studentHeader": true,
+   "fields": [
+    [
+     "Nombre",
+     ""
+    ],
+    [
+     "Grupo",
+     ""
+    ],
+    [
+     "Fecha",
+     ""
+    ],
+    [
+     "Calificación",
+     ""
+    ]
+   ],
+   "instructions": "Tiempo: 60 minutos. Valor total: 100 puntos. Material permitido: ninguno. Responde con pluma; en las preguntas de opción múltiple marca una sola respuesta.",
+   "items": [
+    {
+     "q": "¿Qué palabra reservada de Java indica que una clase hereda de otra?",
+     "points": 8,
+     "options": [
+      "`implements`",
+      "`extends`",
+      "`inherits`",
+      "`super`"
+     ],
+     "answer": 1
+    },
+    {
+     "q": "¿Cuál de las siguientes afirmaciones sobre una clase abstracta es correcta?",
+     "points": 8,
+     "options": [
+      "Se puede instanciar con `new`",
+      "No puede tener constructores",
+      "Puede tener métodos abstractos y métodos concretos",
+      "Solo puede contener constantes"
+     ],
+     "answer": 2
+    },
+    {
+     "q": "Si `Figura f = new Circulo(2);` y `Circulo` sobrescribe `area()`, ¿qué método se ejecuta con `f.area()`?",
+     "points": 8,
+     "options": [
+      "`Figura.area()`",
+      "`Circulo.area()`",
+      "Ninguno: es un error de compilación",
+      "Depende del orden de declaración"
+     ],
+     "answer": 1
+    },
+    {
+     "q": "¿Qué anotación se recomienda al redefinir un método heredado?",
+     "points": 8,
+     "options": [
+      "`@Override`",
+      "`@Overload`",
+      "`@Inherited`",
+      "`@Super`"
+     ],
+     "answer": 0
+    },
+    {
+     "q": "Java permite herencia múltiple de clases.",
+     "points": 6,
+     "kind": "tf",
+     "answer": false
+    },
+    {
+     "q": "Una clase puede implementar varias interfaces.",
+     "points": 6,
+     "kind": "tf",
+     "answer": true
+    },
+    {
+     "q": "La sobrecarga de métodos es un tipo de polimorfismo que se resuelve en tiempo de compilación.",
+     "points": 6,
+     "kind": "tf",
+     "answer": true
+    },
+    {
+     "q": "Explica con tus palabras la diferencia entre **sobrecarga** y **sobrescritura** de métodos. Da un ejemplo de cada una.",
+     "points": 15,
+     "lines": 6,
+     "answerText": "La sobrecarga define varios métodos con el mismo nombre y distinta lista de parámetros en la misma clase (p. ej., `sumar(int,int)` y `sumar(double,double)`); se resuelve al compilar. La sobrescritura redefine en la subclase un método heredado con la misma firma (p. ej., `area()` en `Circulo`); se resuelve en tiempo de ejecución."
+    },
+    {
+     "q": "¿Para qué sirve la palabra reservada `super` dentro de un constructor? Escribe una línea de código de ejemplo.",
+     "points": 15,
+     "lines": 5,
+     "answerText": "Invoca al constructor de la superclase para inicializar los atributos heredados; debe ser la primera instrucción. Ejemplo: `super(nombre);`"
+    },
+    {
+     "q": "Observa el diagrama y escribe el código Java de la clase `Cuadrado`, de modo que reutilice el constructor de `Rectangulo`.",
+     "points": 20,
+     "lines": 8,
+     "figure": {
+      "src": "figs/herencia.mmd",
+      "caption": "Jerarquía de figuras geométricas",
+      "width": 0.45,
+      "alt": "Diagrama de clases de Figura, Circulo, Rectangulo y Cuadrado"
+     },
+     "answerText": "`public class Cuadrado extends Rectangulo { public Cuadrado(double lado) { super(lado, lado); } }`"
+    }
+   ]
+  }
+ ]
+}

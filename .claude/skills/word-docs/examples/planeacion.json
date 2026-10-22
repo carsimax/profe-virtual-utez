@@ -1,0 +1,326 @@
+{
+ "preset": "utez",
+ "page": "letter",
+ "lang": "es-MX",
+ "cover": true,
+ "meta": {
+  "title": "Planeación didáctica",
+  "subtitle": "Unidad 2. Herencia y polimorfismo",
+  "kicker": "Planeación didáctica",
+  "institution": "Universidad Tecnológica Emiliano Zapata del Estado de Morelos",
+  "department": "División Académica de Tecnologías de la Información y Comunicación",
+  "teacher": "[DATO PENDIENTE]",
+  "course": "Programación Orientada a Objetos",
+  "date": "15 de octubre de 2026",
+  "place": "Emiliano Zapata, Morelos",
+  "fields": [
+   [
+    "Asignatura",
+    "Programación Orientada a Objetos"
+   ],
+   [
+    "Docente",
+    "[DATO PENDIENTE]"
+   ],
+   [
+    "Cuatrimestre y grupo",
+    "[DATO PENDIENTE]"
+   ],
+   [
+    "Periodo",
+    "Septiembre–diciembre 2026"
+   ]
+  ],
+  "headerText": "Planeación didáctica · POO · Unidad 2"
+ },
+ "front": [
+  {
+   "type": "toc",
+   "title": "Índice",
+   "levels": 2
+  }
+ ],
+ "body": [
+  {
+   "type": "h1",
+   "text": "Datos generales de la unidad"
+  },
+  {
+   "type": "kv",
+   "cols": 4,
+   "rows": [
+    [
+     "Unidad",
+     "2. Herencia y polimorfismo"
+    ],
+    [
+     "Horas teóricas",
+     "[DATO PENDIENTE]"
+    ],
+    [
+     "Horas prácticas",
+     "[DATO PENDIENTE]"
+    ],
+    [
+     "Semanas",
+     "3"
+    ],
+    [
+     "Modalidad",
+     "Presencial"
+    ],
+    [
+     "Programa educativo",
+     "Ingeniería en Desarrollo y Gestión de Software"
+    ]
+   ]
+  },
+  "## Resultado de aprendizaje\n\nAl finalizar la unidad, el estudiante **implementa jerarquías de clases** que aplican herencia, clases abstractas, interfaces y polimorfismo para resolver problemas de software reutilizable y extensible.",
+  "## Saberes de la unidad\n\n| Saber | Saber hacer | Ser |\n|---|---|---|\n| Concepto de herencia, superclase y subclase | Diseñar jerarquías en diagramas de clases UML | Trabajo colaborativo en equipo |\n| Clases abstractas e interfaces | Sobrescribir métodos con `@Override` | Responsabilidad en la entrega |\n| Polimorfismo de inclusión y sobrecarga | Usar referencias de la superclase para invocar comportamiento | Pensamiento crítico al elegir abstracciones |",
+  {
+   "type": "h2",
+   "text": "Modelo de referencia"
+  },
+  {
+   "type": "p",
+   "text": "El caso guía de la unidad es una jerarquía de figuras geométricas. Es un **ejemplo ilustrativo**: cada subclase redefine `area()` y el programa cliente opera sobre referencias de tipo `Figura`."
+  },
+  {
+   "type": "figure",
+   "src": "figs/herencia.mmd",
+   "caption": "Jerarquía de clases del caso guía (ejemplo ilustrativo)",
+   "width": 0.6,
+   "alt": "Diagrama de clases: Figura abstracta con subclases Circulo y Rectangulo; Cuadrado hereda de Rectangulo"
+  },
+  {
+   "type": "h1",
+   "text": "Secuencia didáctica"
+  },
+  {
+   "type": "table",
+   "caption": "Secuencia didáctica de la unidad 2",
+   "headers": [
+    "Momento",
+    "Actividad",
+    "Evidencia",
+    "Tiempo"
+   ],
+   "widths": [
+    1.2,
+    3.5,
+    2.2,
+    1
+   ],
+   "align": [
+    "l",
+    "l",
+    "l",
+    "r"
+   ],
+   "rows": [
+    [
+     "Apertura",
+     "Lluvia de ideas sobre objetos del mundo real que comparten características",
+     "Mapa mental",
+     "1 h"
+    ],
+    [
+     "Apertura",
+     "Diagnóstico breve sobre clases y objetos (unidad 1)",
+     "Cuestionario diagnóstico",
+     "1 h"
+    ],
+    [
+     "Desarrollo",
+     "Exposición de herencia simple, `super` y constructores encadenados",
+     "Apuntes",
+     "2 h"
+    ],
+    [
+     "Desarrollo",
+     "Práctica guiada: jerarquía de figuras geométricas",
+     "Práctica de herencia",
+     "4 h"
+    ],
+    [
+     "Desarrollo",
+     "Clases abstractas, interfaces y polimorfismo con ejemplos en Java",
+     "Ejercicios en clase",
+     "3 h"
+    ],
+    [
+     "Desarrollo",
+     "Práctica: sistema de nómina con empleados polimórficos",
+     "Práctica de polimorfismo",
+     "4 h"
+    ],
+    [
+     "Cierre",
+     "Desarrollo y presentación del proyecto integrador por equipos",
+     "Proyecto integrador",
+     "6 h"
+    ],
+    [
+     "Cierre",
+     "Examen escrito de la unidad",
+     "Examen",
+     "2 h"
+    ]
+   ]
+  },
+  {
+   "type": "h1",
+   "text": "Evaluación"
+  },
+  {
+   "type": "p",
+   "text": "La calificación de la unidad se integra con cuatro evidencias cuyo peso suma **100 %**. El proyecto integrador tiene el mayor peso porque evidencia el saber hacer completo."
+  },
+  {
+   "type": "table",
+   "caption": "Ponderación de evidencias",
+   "headers": [
+    "Evidencia",
+    "Instrumento",
+    "Porcentaje"
+   ],
+   "widths": [
+    2.5,
+    2.5,
+    1
+   ],
+   "align": [
+    "l",
+    "l",
+    "r"
+   ],
+   "rows": [
+    [
+     "Práctica de herencia",
+     "Lista de cotejo",
+     "20 %"
+    ],
+    [
+     "Práctica de polimorfismo",
+     "Lista de cotejo",
+     "20 %"
+    ],
+    [
+     "Proyecto integrador",
+     "Rúbrica",
+     "35 %"
+    ],
+    [
+     "Examen escrito",
+     "Examen",
+     "25 %"
+    ],
+    [
+     "**Total**",
+     "",
+     "**100 %**"
+    ]
+   ]
+  },
+  {
+   "type": "figure",
+   "src": "figs/evaluacion.chart.json",
+   "caption": "Peso de cada evidencia en la calificación de la unidad",
+   "width": 0.85,
+   "alt": "Gráfica de barras: prácticas 20 % cada una, proyecto 35 %, examen 25 %"
+  },
+  {
+   "type": "h2",
+   "text": "Rúbrica del proyecto integrador"
+  },
+  {
+   "type": "rubric",
+   "caption": "Rúbrica del proyecto integrador",
+   "levels": [
+    "Excelente (10)",
+    "Bueno (8)",
+    "Suficiente (7)",
+    "Insuficiente (5)"
+   ],
+   "criteria": [
+    {
+     "name": "Diseño de la jerarquía",
+     "weight": "30 %",
+     "levels": [
+      "Jerarquía coherente con abstractas e interfaces justificadas",
+      "Jerarquía correcta con una abstracción innecesaria",
+      "Herencia funcional pero con duplicación de código",
+      "Sin jerarquía o con herencia incorrecta"
+     ]
+    },
+    {
+     "name": "Uso de polimorfismo",
+     "weight": "30 %",
+     "levels": [
+      "El cliente opera solo con la superclase o interfaz",
+      "Polimorfismo con algún `instanceof` evitable",
+      "Polimorfismo parcial",
+      "No aplica polimorfismo"
+     ]
+    },
+    {
+     "name": "Calidad del código",
+     "weight": "20 %",
+     "levels": [
+      "Nombres claros, encapsulamiento y sin advertencias",
+      "Errores menores de estilo",
+      "Código funcional pero desordenado",
+      "No compila"
+     ]
+    },
+    {
+     "name": "Presentación",
+     "weight": "20 %",
+     "levels": [
+      "Explica decisiones de diseño con el diagrama UML",
+      "Explica el diseño sin diagrama",
+      "Explicación incompleta",
+      "No presenta"
+     ]
+    }
+   ]
+  },
+  {
+   "type": "h1",
+   "text": "Recursos"
+  },
+  {
+   "type": "bullets",
+   "items": [
+    "Laboratorio de cómputo con JDK 21 y un IDE (IntelliJ IDEA o NetBeans)",
+    "Proyector y pizarrón",
+    "Plataforma institucional para entrega de evidencias: [DATO PENDIENTE]"
+   ]
+  }
+ ],
+ "back": [
+  {
+   "type": "references",
+   "newPage": true,
+   "items": [
+    "Deitel, P., & Deitel, H. (2017). *Java: Cómo programar* (10.ª ed.). Pearson.",
+    "Schildt, H. (2022). *Java: The complete reference* (12.ª ed.). McGraw-Hill.",
+    "Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). *Design patterns: Elements of reusable object-oriented software*. Addison-Wesley."
+   ]
+  },
+  {
+   "type": "signatures",
+   "cols": 2,
+   "people": [
+    {
+     "name": "[DATO PENDIENTE]",
+     "role": "Docente de la asignatura"
+    },
+    {
+     "name": "[DATO PENDIENTE]",
+     "role": "Director/a de la División Académica"
+    }
+   ]
+  }
+ ]
+}

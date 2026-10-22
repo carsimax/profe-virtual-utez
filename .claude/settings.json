@@ -1,0 +1,49 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv run slides-qa:*)",
+      "Bash(uv run slides-mermaid:*)",
+      "Bash(uv run slides-pptx:*)",
+      "Bash(uv run slides-inline-images:*)",
+      "Bash(uv run slides-chart:*)",
+      "Bash(uv run mermaid-check:*)",
+      "Bash(uv run svg-check:*)",
+      "Bash(uv run docs-build:*)",
+      "Bash(uv run docs-visuals:*)",
+      "Bash(uv run docs-qa:*)",
+      "Bash(uv run docs-fill:*)",
+      "Bash(uv run docs-to-md:*)",
+      "Bash(uv run course-lint:*)",
+      "Bash(uv run teach-hook:*)",
+      "Bash(uv run pytest:*)"
+    ],
+    "deny": [
+      "Edit(/institucional/**)",
+      "Edit(/asignaturas/*/hoja-asignatura.md)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [{ "type": "command", "command": "uv run --quiet --project \"$CLAUDE_PROJECT_DIR\" teach-hook pre" }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|Bash",
+        "hooks": [{ "type": "command", "command": "uv run --quiet --project \"$CLAUDE_PROJECT_DIR\" teach-hook post" }]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [{ "type": "command", "command": "uv run --quiet --project \"$CLAUDE_PROJECT_DIR\" teach-hook stop" }]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [{ "type": "command", "command": "uv run --quiet --project \"$CLAUDE_PROJECT_DIR\" teach-hook session" }]
+      }
+    ]
+  }
+}

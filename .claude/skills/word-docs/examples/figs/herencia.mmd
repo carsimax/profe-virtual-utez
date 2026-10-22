@@ -1,0 +1,22 @@
+classDiagram
+  class Figura {
+    <<abstract>>
+    -String nombre
+    +area() double
+    +describir() String
+  }
+  class Circulo {
+    -double radio
+    +area() double
+  }
+  class Rectangulo {
+    -double base
+    -double altura
+    +area() double
+  }
+  class Cuadrado {
+    +Cuadrado(double lado)
+  }
+  Figura <|-- Circulo
+  Figura <|-- Rectangulo
+  Rectangulo <|-- Cuadrado

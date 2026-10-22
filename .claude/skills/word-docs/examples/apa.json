@@ -1,0 +1,85 @@
+{
+ "preset": "apa",
+ "cover": true,
+ "meta": {
+  "title": "Adopción de control de versiones en estudiantes de TSU en Tecnologías de la Información",
+  "author": "Nombre del estudiante",
+  "institution": "Universidad Tecnológica Emiliano Zapata del Estado de Morelos",
+  "department": "Ingeniería en Desarrollo y Gestión de Software",
+  "teacher": "Asesor: [Nombre]",
+  "date": "Octubre de 2026",
+  "headerText": "ADOPCIÓN DE CONTROL DE VERSIONES"
+ },
+ "front": [
+  {
+   "type": "title",
+   "text": "Resumen"
+  },
+  {
+   "type": "p",
+   "text": "Este reporte analiza la adopción de Git en estudiantes de tercer cuatrimestre...",
+   "noIndent": true
+  },
+  {
+   "type": "pagebreak"
+  },
+  {
+   "type": "toc"
+  },
+  {
+   "type": "lot",
+   "newPage": false
+  },
+  {
+   "type": "lof"
+  }
+ ],
+ "body": [
+  "# Introducción\n\nEl control de versiones es una competencia clave (Chacon & Straub, 2014). Los estudiantes que lo adoptan temprano reportan menos pérdida de trabajo.^[Encuesta interna, ejemplo.]\n\n## Planteamiento del problema\n\nTexto del problema con suficiente extensión para ver el interlineado doble y la sangría de primera línea propia de APA 7.\n\n### Preguntas de investigación\n\n1. ¿Qué tan frecuente es el uso de ramas?\n2. ¿Qué obstáculos reportan?",
+  "# Método",
+  {
+   "type": "table",
+   "caption": "Características de la muestra",
+   "headers": [
+    "Grupo",
+    "n",
+    "Edad media"
+   ],
+   "rows": [
+    [
+     "A",
+     "32",
+     "19.4"
+    ],
+    [
+     "B",
+     "29",
+     "20.1"
+    ]
+   ],
+   "align": [
+    "l",
+    "r",
+    "r"
+   ],
+   "source": "Elaboración propia con datos de ejemplo."
+  },
+  {
+   "type": "figure",
+   "src": "figs/avance.chart.json",
+   "caption": "Entregas por semana",
+   "width": 0.8
+  },
+  "# Resultados\n\n> Una cita en bloque de más de 40 palabras se escribe sin comillas, con sangría izquierda, como indica APA 7 para citas textuales largas dentro del cuerpo del trabajo académico. (Autor, 2020, p. 15)"
+ ],
+ "back": [
+  {
+   "type": "references",
+   "newPage": true,
+   "items": [
+    "Chacon, S., & Straub, B. (2014). *Pro Git* (2.ª ed.). Apress. https://doi.org/10.1007/978-1-4842-0076-6",
+    "American Psychological Association. (2020). *Publication manual of the American Psychological Association* (7.ª ed.)."
+   ]
+  }
+ ]
+}

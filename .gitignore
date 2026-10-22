@@ -1,0 +1,13 @@
+.DS_Store
+.atl/.skill-registry.cache.json
+qa/
+*.outline.json
+*.pages.json
+*.mermaid-tmp.html
+.venv/
+__pycache__/
+.pytest_cache/
+~$*
+
+# Repo de clase anidado: tiene su propio .git (ver CLAUDE.md)
+cursos/*/*/proyecto-clase/

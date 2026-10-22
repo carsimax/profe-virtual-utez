@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TÍTULO DEL DECK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@500;700;800&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* === 1. DISEÑO UTEZ (claro) === */
+:root{
+  --bg:#f7f8f6; --surface:#eef1ee; --surface-2:#e2e8e4; --line:#d0d8d3; --line-strong:#68716d;
+  --text:#0d1d33; --text-dim:#47505a;
+  --accent:#00735b; --accent-2:#2563a8; --accent-3:#a3470f; --accent-4:#6a3fa0;
+  --font-display:"Saira", "Arial Narrow", sans-serif; --display-weight:800;
+  --font-body:"Source Sans 3", system-ui, sans-serif;
+  --font-mono:"JetBrains Mono", ui-monospace, monospace;
+  --radius:12px;
+  --bg-art:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600' fill='none' stroke='%23009475' stroke-width='3' stroke-opacity='.10' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg transform='rotate(180 300 300)'%3E%3Cpath d='M600 70H430l-50 50H270'/%3E%3Ccircle cx='256' cy='120' r='12'/%3E%3Cpath d='M600 130H470l-50 50v80'/%3E%3Ccircle cx='420' cy='274' r='12'/%3E%3Cpath d='M600 190H510l-40 40v110l-50 50'/%3E%3Ccircle cx='410' cy='400' r='12'/%3E%3Cpath d='M600 250h-50v180'/%3E%3Ccircle cx='550' cy='444' r='12'/%3E%3Cpath d='M520 0v30l-30 30H350l-40-40'/%3E%3Ccircle cx='300' cy='10' r='12'/%3E%3C/g%3E%3C/svg%3E") left -16px bottom -16px / 360px 360px no-repeat;
+  --series-1:#009475; --series-2:#2a78d6; --series-3:#eb6834; --series-4:#6250d6;
+  /* --logo:url("data:image/webp;base64,…"); --logo-bg:#ffffff; (ver Marca y logo) */
+}
+
+/* === 2. ESCALA TIPOGRÁFICA (px sobre lienzo 1920×1080; usa SIEMPRE estos tokens) === */
+:root{
+  --fs-hero:150px; --fs-h1:104px; --fs-h2:72px; --fs-h3:46px; --fs-lead:44px;
+  --fs-body:36px; --fs-small:26px; --fs-stat:150px; --fs-code:30px;
+  --pad-x:128px; --pad-y:104px; --gap:48px;
+  /* Escala de espaciado: usa solo estos valores (8/12/16/24/32/48/64/96/160 px) */
+  --sp-1:8px; --sp-2:12px; --sp-3:16px; --sp-4:24px; --sp-5:32px; --sp-6:48px; --sp-7:64px; --sp-8:96px; --sp-9:160px;
+}
+/* Rejilla de 12 columnas: <div class="g12"> con hijos style="--col:4" (span de columnas) */
+.g12{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--sp-5);row-gap:var(--sp-5)}
+.g12 > *{grid-column:span var(--col,12);min-width:0}
+
+/* === 3. RUNTIME — no tocar === */
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text)}
+body{font:400 var(--fs-body)/1.45 var(--font-body);overflow:hidden;-webkit-font-smoothing:antialiased;font-synthesis:none;text-rendering:optimizeLegibility}
+.deck{position:fixed;inset:0;overflow:hidden;background:#000}
+.stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0}
+.slide{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;
+  padding:var(--pad-y) var(--pad-x);display:flex;flex-direction:column;gap:var(--gap);
+  background:var(--bg-art,none),var(--bg);
+  --tone:var(--accent);
+  visibility:hidden;opacity:0;transform:translateX(48px);
+  transition:opacity .42s ease,transform .5s cubic-bezier(.16,1,.3,1),visibility 0s linear .5s}
+.slide.past{transform:translateX(-48px)}
+.slide.active{visibility:visible;opacity:1;transform:none;z-index:1;
+  transition:opacity .42s ease,transform .5s cubic-bezier(.16,1,.3,1),visibility 0s}
+.slide[data-tone="2"]{--tone:var(--accent-2)} .slide[data-tone="3"]{--tone:var(--accent-3)} .slide[data-tone="4"]{--tone:var(--accent-4)}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .5s ease,transform .6s cubic-bezier(.16,1,.3,1)}
+.slide.active .reveal{opacity:1;transform:none;transition-delay:calc(var(--i,0) * 90ms + 160ms)}
+.notes{display:none!important}
+
+.hud{position:fixed;left:0;right:0;bottom:0;z-index:20;pointer-events:none;font:500 13px/1 var(--font-mono);color:var(--text-dim)}
+.hud-progress{height:3px;background:rgb(255 255 255 / .06)}
+.hud-progress i{display:block;height:100%;width:0;background:var(--hud-tone,var(--accent));transition:width .35s ease}
+.hud-row{display:flex;align-items:center;gap:14px;padding:10px 16px;opacity:.55;transition:opacity .3s}
+.awake .hud-row{opacity:1}
+.hud-badge{padding:5px 10px;border-radius:999px;background:var(--hud-tone,var(--accent));color:var(--bg);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:11px}
+.hud-badge:empty{display:none}
+.hud-count{margin-left:auto;font-variant-numeric:tabular-nums}
+.hint{position:fixed;left:50%;bottom:44px;transform:translateX(-50%);z-index:21;padding:10px 16px;border-radius:999px;
+  background:rgb(0 0 0 / .72);color:#eee;font:500 13px/1.3 var(--font-mono);white-space:nowrap;transition:opacity .6s;pointer-events:none}
+.hint.gone{opacity:0}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:60;padding:12px 18px;border-radius:10px;background:#1b1b1f;color:#fff;font:500 14px/1.4 system-ui;box-shadow:0 10px 40px #0008}
+.blackout{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .25s;z-index:40}
+.is-black .blackout{opacity:1;pointer-events:auto}
+.touch-nav{display:none}
+@media (pointer:coarse){.touch-nav{display:flex;position:fixed;right:12px;bottom:40px;gap:8px;z-index:22}
+  .touch-nav button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgb(0 0 0 / .45);color:var(--text);font:600 20px/1 var(--font-body)}}
+
+.overview{position:fixed;inset:0;z-index:30;overflow:auto;padding:32px;display:none;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;align-content:start;background:#06060a}
+.show-overview .overview{display:grid}
+.ov-item{all:unset;cursor:pointer;display:flex;flex-direction:column;gap:8px;border-radius:10px;padding:6px;color:#ddd;font:500 13px/1.3 var(--font-mono)}
+.ov-item:focus-visible,.ov-item:hover{outline:2px solid var(--accent);outline-offset:2px}
+.ov-item.current .ov-thumb{outline:2px solid var(--accent)}
+.ov-thumb{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:6px;background:var(--bg)}
+.ov-scale{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;transform:scale(var(--ov-s,.14))}
+.ov-scale .slide,.ov-scale .reveal{transition:none!important}
+
+/* presentador */
+.presenter{display:none}
+.mode-presenter .deck,.mode-presenter .hud,.mode-presenter .hint,.mode-presenter .touch-nav{display:none}
+.mode-presenter body{overflow:auto;background:#101014;color:#e8e8ea}
+.mode-presenter .presenter{display:grid;grid-template-columns:1.55fr 1fr;grid-template-rows:1fr auto;gap:16px;height:100vh;padding:16px;font:400 18px/1.5 system-ui,sans-serif}
+.presenter iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#000;display:block}
+.p-cur{align-self:start}
+.p-side{display:flex;flex-direction:column;gap:14px;min-height:0}
+.p-lbl{font:600 12px/1 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:#9a9aa5;display:block;margin-bottom:6px}
+.p-end{display:none;aspect-ratio:16/9;place-items:center;border:1px dashed #444;border-radius:8px;color:#888}
+.p-clock{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.p-elapsed{font:700 44px/1 ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.p-pace{font:600 15px/1 ui-monospace,monospace}
+.p-pace.late{color:#ff8a80}.p-pace.early{color:#9be29b}
+.p-clock button{margin-left:auto;background:#24242b;color:#ddd;border:1px solid #3a3a44;border-radius:6px;padding:6px 10px;font:500 13px system-ui;cursor:pointer}
+.p-notes{flex:1;overflow:auto;background:#17171c;border:1px solid #2a2a33;border-radius:8px;padding:16px 18px;font-size:20px}
+.p-notes ul{padding-left:1.1em;margin:.3em 0}.p-notes p{margin:.3em 0}
+.p-bar{grid-column:1/-1;display:flex;gap:16px;align-items:center;font:500 14px/1 ui-monospace,monospace;color:#9a9aa5}
+.p-bar .p-count{color:#fff;font-size:18px}
+.p-status{margin-left:auto}
+.p-status.off{color:#ff8a80}
+
+/* preview (iframes del presentador) */
+.mode-preview .hud,.mode-preview .hint,.mode-preview .touch-nav{display:none}
+.mode-preview .slide,.mode-preview .reveal{transition:none!important}
+.mode-preview .slide .reveal{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  .slide,.reveal,.hud-progress i{transition:none!important}
+  .slide{transform:none!important}.reveal{opacity:1!important;transform:none!important}
+}
+
+/* === 4. TIPOGRAFÍA Y COMPONENTES === */
+.kicker{margin:0;font:600 var(--fs-small)/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--tone)}
+.title,h1,h2,h3{margin:0;font-family:var(--font-display);font-weight:var(--display-weight);line-height:1.05;letter-spacing:-.02em;text-wrap:balance}
+h1,.title-hero{font-size:var(--fs-hero);line-height:.98;letter-spacing:-.03em}
+h2,.title{font-size:var(--fs-h2)}
+h3{font-size:var(--fs-h3);line-height:1.15;letter-spacing:-.01em}
+p{margin:0;text-wrap:pretty}
+.lead{font-size:var(--fs-lead);line-height:1.35;color:var(--text-dim);max-width:30ch}
+.dim{color:var(--text-dim)} .tone{color:var(--tone)} .mono{font-family:var(--font-mono)}
+.small{font-size:var(--fs-small);line-height:1.4}
+strong,b{font-weight:700;color:var(--text)}
+em.hl{font-style:normal;color:var(--tone)}
+code{font-family:var(--font-mono);font-size:.88em;padding:.08em .32em;border-radius:6px;background:var(--surface-2)}
+.head{display:flex;flex-direction:column;gap:22px;max-width:1500px}
+.body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:var(--gap)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:40px 44px;display:flex;flex-direction:column;gap:16px}
+.card h3{font-size:var(--fs-h3)}
+.card p{color:var(--text-dim)}
+.card.is-tone{border-color:var(--tone);box-shadow:inset 0 0 0 1px var(--tone)}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:10px 20px;border-radius:999px;border:1px solid var(--line-strong);font:500 var(--fs-small)/1 var(--font-mono);color:var(--text)}
+.list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:22px}
+.list li{position:relative;padding-left:44px}
+.list li::before{content:"";position:absolute;left:0;top:.55em;width:18px;height:3px;background:var(--tone)}
+.checklist li::before{content:"✓";top:0;width:auto;height:auto;background:none;color:var(--tone);font-weight:700}
+.term{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.term-bar{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--line);font:500 var(--fs-small)/1 var(--font-mono);color:var(--text-dim)}
+.term-bar::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--line-strong);box-shadow:24px 0 var(--line-strong),48px 0 var(--line-strong);margin-right:60px}
+.term pre{margin:0;padding:32px 36px;font:400 var(--fs-code)/1.6 var(--font-mono);white-space:pre;overflow:hidden}
+.term .c{color:var(--text-dim)} .term .k{color:var(--accent)} .term .s{color:var(--accent-4)} .term .p{color:var(--accent-2)}
+.placeholder{display:grid;place-items:center;text-align:center;padding:40px;aspect-ratio:var(--ratio,16/9);border:2px dashed var(--line-strong);border-radius:var(--radius);
+  color:var(--text-dim);font:500 var(--fs-small)/1.4 var(--font-mono);
+  background:repeating-linear-gradient(45deg,transparent 0 22px,rgb(127 127 127 / .07) 22px 23px)}
+.media{margin:0;display:flex;flex-direction:column;gap:16px;min-height:0}
+.media img{display:block;width:100%;height:100%;object-fit:cover;border-radius:var(--radius);min-height:0}
+.media img.contain{object-fit:contain;background:var(--surface)}
+figcaption{font:500 var(--fs-small)/1.4 var(--font-mono);color:var(--text-dim)}
+table.tbl{width:100%;border-collapse:collapse;font-size:var(--fs-body)}
+.tbl th{font:600 var(--fs-small)/1.2 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);text-align:left;padding:0 24px 18px 0;border-bottom:2px solid var(--line-strong)}
+.tbl td{padding:20px 24px 20px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl td:first-child{font-family:var(--font-mono);color:var(--tone)}
+.num{font-variant-numeric:tabular-nums}
+
+/* === 5. LAYOUTS (una clase l-* por slide) === */
+.l-cover{justify-content:center;gap:40px}
+.l-cover .lead{max-width:36ch}
+.l-cover .meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:24px}
+.l-section{justify-content:center;gap:28px}
+.l-section .sec-num{font:600 260px/0.9 var(--font-display);color:var(--tone);letter-spacing:-.04em}
+.l-section h2{font-size:var(--fs-h1);max-width:16ch}
+.l-split{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);align-items:center;column-gap:96px}
+.l-split.flip{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}
+.l-split.flip > :first-child{order:2}
+.l-split .col{display:flex;flex-direction:column;gap:30px;min-width:0}
+.l-split .col p:not(.kicker){color:var(--text-dim)}
+.l-statement{justify-content:center}
+.l-statement .claim{font:var(--display-weight) var(--fs-h1)/1.06 var(--font-display);letter-spacing:-.025em;max-width:22ch;text-wrap:balance}
+.l-statement .claim em{font-style:normal;color:var(--tone)}
+.stats{display:grid;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));gap:56px}
+.stat{display:flex;flex-direction:column;gap:14px;border-top:2px solid var(--line);padding-top:28px}
+.stat b{font:700 var(--fs-stat)/.9 var(--font-display);letter-spacing:-.04em;color:var(--tone);font-variant-numeric:tabular-nums}
+.stat span{color:var(--text-dim);max-width:22ch}
+.cards{display:grid;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));gap:32px}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.compare .card:first-child h3{color:var(--text-dim)}
+.compare .card:last-child{border-color:var(--tone)}
+.steps{display:grid;grid-template-columns:repeat(var(--cols,4),minmax(0,1fr));gap:36px;margin:0;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;display:flex;flex-direction:column;gap:14px;border-top:3px solid var(--line);padding-top:28px}
+.steps li::before{content:counter(s,decimal-leading-zero);font:700 var(--fs-small)/1 var(--font-mono);color:var(--tone);letter-spacing:.1em}
+.steps li.is-tone{border-top-color:var(--tone)}
+.steps h3{font-size:var(--fs-h3)}
+.steps p{color:var(--text-dim)}
+.l-quote{justify-content:center}
+.l-quote blockquote{margin:0;font:500 var(--fs-h2)/1.18 var(--font-display);max-width:30ch;text-wrap:balance}
+.l-quote blockquote::before{content:"“";display:block;font-size:200px;line-height:.6;color:var(--tone)}
+.l-quote cite{font:500 var(--fs-small)/1.4 var(--font-mono);color:var(--text-dim);font-style:normal}
+.l-image .media{flex:1}
+.l-image.bleed{padding:0}
+.l-image.bleed .media{height:100%}
+.l-image.bleed .media img,.l-image.bleed .placeholder{height:100%;aspect-ratio:auto;border-radius:0;border:0}
+.l-image.bleed .head{position:absolute;left:var(--pad-x);top:var(--pad-y);z-index:1;padding:28px 36px;background:rgb(0 0 0 / .62);color:#fff;border-radius:var(--radius);max-width:1100px}
+.l-image.bleed .media img{border-radius:0}
+.l-image.bleed figcaption{position:absolute;left:var(--pad-x);bottom:56px;background:rgb(0 0 0 / .6);color:#fff;padding:10px 16px;border-radius:8px}
+.l-closing .links{display:flex;gap:16px;flex-wrap:wrap}
+
+.l-bento .bento{flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:var(--sp-4)}
+.bento .cell{justify-content:center;padding:var(--sp-5) var(--sp-6)}
+.bento .span-2x1{grid-column:span 2}
+.bento .span-1x2{grid-row:span 2}
+.bento .span-2x2{grid-column:span 2;grid-row:span 2}
+.bento .span-2x2 h3{font-size:var(--fs-h2)}
+.l-sidebar{display:grid;grid-template-columns:34% minmax(0,1fr);column-gap:var(--sp-8);align-items:center}
+.l-sidebar .col{display:flex;flex-direction:column;gap:var(--sp-5);min-width:0}
+.l-sidebar .stack{display:flex;flex-direction:column;gap:var(--sp-4);min-width:0}
+/* Slides con función pedagógica: evidencia, recorrido de código, ejemplo resuelto, predicción, mito, caso (ver references/layouts.md) */
+.l-evidence .body{flex-direction:row;align-items:center;gap:var(--sp-7)}
+.l-evidence .fig{flex:1}
+.l-evidence .focus{flex:0 0 520px}
+.walk{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:var(--sp-6);align-items:center}
+.walk .ln{display:block;padding:0 var(--sp-3);margin:0 calc(var(--sp-3) * -1);border-radius:6px}
+.walk .ln:not(.hl),.walk .ln:not(.hl) *{color:var(--text-dim)}
+.walk .ln.hl{background:color-mix(in srgb,var(--tone) 14%,transparent)}
+.mk{display:inline-grid;place-items:center;flex:none;width:1.4em;height:1.4em;border-radius:50%;background:var(--tone);color:var(--bg);font:700 var(--fs-small)/1 var(--font-mono)}
+.walk pre .mk{margin-left:var(--sp-3)}
+.labs{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:var(--sp-5)}
+.labs li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--sp-3) var(--sp-4);align-items:start}
+.labs p{color:var(--text-dim)}
+.subgoal{align-self:flex-start;padding:10px 24px;border-radius:999px;background:var(--tone);color:var(--bg);font:700 var(--fs-small)/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase}
+.worked{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--sp-7);align-items:center}
+.sc{margin:0;display:flex;flex-direction:column;gap:var(--sp-5)}
+.sc dt{font:600 var(--fs-small)/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--tone);margin-bottom:var(--sp-2)}
+.sc dd{margin:0}
+.verify{display:flex;gap:var(--sp-3);align-items:baseline;color:var(--text-dim)}
+.verify .ico{color:var(--tone);align-self:center}
+.pred{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:var(--sp-6);align-items:center}
+.opts{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:var(--sp-3)}
+.opt{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--sp-4);align-items:center;padding:var(--sp-4) var(--sp-5);border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.opt .mk{background:var(--surface-2);color:var(--text)}
+.opt.is-right{border-color:var(--tone);box-shadow:inset 0 0 0 1px var(--tone)}
+.opt.is-right .mk{background:var(--tone);color:var(--bg)}
+.l-myth .compare .card:first-child{border-style:dashed;border-color:var(--line-strong)}
+.case{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:var(--sp-7);align-items:center}
+.facts{margin:0;display:flex;flex-direction:column}
+.facts div{display:grid;grid-template-columns:220px minmax(0,1fr);gap:var(--sp-4);padding:var(--sp-4) 0;border-top:2px solid var(--line)}
+.facts dt{font:600 var(--fs-small)/1.4 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--tone)}
+.facts dd{margin:0}
+/* Corte (parada de actividad): ver references/layouts.md */
+.slide.l-corte{--corte-ac:#2fc79c;--corte-dim:#a9b8c8;background:var(--text);color:var(--bg);justify-content:center;gap:var(--sp-5)}
+.l-corte::before{content:"";position:absolute;inset:0 0 auto 0;height:32px;background:var(--corte-ac)}
+.l-corte .kicker{color:var(--corte-ac)}
+.l-corte h2{font-size:var(--fs-h1);max-width:22ch;color:var(--bg)}
+.corte-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-5);margin:0}
+.corte-facts div{border-top:2px solid var(--corte-ac);padding-top:var(--sp-3)}
+.corte-facts dt{font:600 var(--fs-small)/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--corte-dim);margin-bottom:var(--sp-2)}
+.corte-facts dd{margin:0;font-size:var(--fs-body);line-height:1.2;color:var(--bg)}
+.corte-back{font-size:var(--fs-lead);color:var(--corte-ac);margin:0}
+.corte-back b{color:var(--bg)}
+.l-timeline .body{justify-content:stretch}
+.timeline{position:relative;flex:1;min-height:0;display:grid;grid-template-columns:repeat(var(--cols,5),minmax(0,1fr));grid-template-rows:minmax(0,1fr) auto minmax(0,1fr);column-gap:var(--sp-5);margin:0;padding:0;list-style:none}
+.timeline::before{content:"";position:absolute;left:0;right:0;top:50%;height:3px;margin-top:-1px;background:var(--line-strong)}
+.timeline li{display:contents}
+.timeline li::after{content:"";grid-row:2;justify-self:center;width:var(--sp-4);height:var(--sp-4);border-radius:50%;background:var(--tone);border:4px solid var(--bg);position:relative;z-index:1}
+.timeline .t-body{display:flex;flex-direction:column;gap:var(--sp-2);padding:var(--sp-4) 0;min-width:0}
+.timeline li:nth-child(odd) > .t-body{grid-row:1;align-self:end}
+.timeline li:nth-child(even) > .t-body{grid-row:3;align-self:start}
+.timeline li:nth-child(n) > .t-body,.timeline li::after{grid-column:var(--c)}
+.timeline li:nth-child(1){--c:1}.timeline li:nth-child(2){--c:2}.timeline li:nth-child(3){--c:3}.timeline li:nth-child(4){--c:4}.timeline li:nth-child(5){--c:5}.timeline li:nth-child(6){--c:6}.timeline li:nth-child(7){--c:7}
+.timeline .when{font:600 var(--fs-small)/1 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--tone)}
+.timeline p{color:var(--text-dim);font-size:var(--fs-small);line-height:1.4}
+.timeline.vertical{display:flex;flex-direction:column;justify-content:space-between;padding-left:var(--sp-7)}
+.timeline.vertical::before{left:11px;right:auto;top:0;bottom:0;width:3px;height:auto;margin:0}
+.timeline.vertical li{display:grid;grid-template-columns:var(--sp-4) minmax(0,1fr);column-gap:var(--sp-5);align-items:center;position:relative}
+.timeline.vertical li::after{grid-row:1;grid-column:1;position:absolute;left:calc(var(--sp-7) * -1 + 1px);top:50%;margin-top:calc(var(--sp-4) / -2)}
+.timeline.vertical li > .t-body{grid-row:1;grid-column:2;align-self:center;padding:var(--sp-2) 0}
+
+/* === 6. DIAGRAMAS SVG (usa clases, no colores hex) === */
+.fig{margin:0;min-width:0;display:flex;flex-direction:column;gap:14px}
+.fig > svg{display:block;width:100%;height:auto;max-height:780px;overflow:visible}
+.d-box{fill:var(--surface-2);stroke:var(--line-strong);stroke-width:2}
+.d-box.tone{stroke:var(--tone);stroke-width:3}
+.d-box.fill{fill:var(--tone);stroke:none}
+.d-zone{fill:none;stroke:var(--line-strong);stroke-width:1.5;stroke-dasharray:6 6}
+.d-text{fill:var(--text);font:500 24px var(--font-body)}
+.d-text.on-fill{fill:var(--bg);font-weight:700}
+.d-label{fill:var(--text-dim);font:600 15px var(--font-mono);letter-spacing:.12em;text-transform:uppercase}
+.d-big{fill:var(--tone);font:700 64px var(--font-display)}
+.d-line{fill:none;stroke:var(--line-strong);stroke-width:2.5}
+.d-line.dash{stroke-dasharray:8 7}
+.d-line.hot{stroke:var(--tone);stroke-width:4}
+.d-arrow{fill:context-stroke}
+.d-dot{fill:var(--tone)}
+
+/* === 6b. ÍCONOS, ILUSTRACIONES, GRÁFICAS, MERMAID, LOGO === */
+.ico{width:1em;height:1em;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.15em}
+.ico-badge{display:grid;place-items:center;width:84px;height:84px;border-radius:calc(var(--radius) * .75);background:var(--surface-2);color:var(--tone);font-size:44px}
+.d-ico{fill:none;stroke:var(--text);stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.d-ico.tone{stroke:var(--tone)}
+.ill-tone{fill:var(--tone)} .ill-2{fill:var(--accent-2)} .ill-soft{fill:var(--surface-2)} .ill-surface{fill:var(--surface)}
+.ill-line{fill:none;stroke:var(--line-strong);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.ill-ink{fill:var(--text)} .ill-bg{fill:var(--bg)}
+.chart{display:block;width:100%;height:auto;overflow:visible}
+.ch-grid{stroke:var(--line);stroke-width:1}
+.ch-axis{stroke:var(--line-strong);stroke-width:1.5}
+.ch-tick{fill:var(--text-dim);font:500 20px var(--font-mono)}
+.ch-label{fill:var(--text);font:500 22px var(--font-body)}
+.ch-value{fill:var(--text);font:700 22px var(--font-body)}
+.ch-s1{fill:var(--series-1);stroke:var(--series-1)} .ch-s2{fill:var(--series-2);stroke:var(--series-2)}
+.ch-s3{fill:var(--series-3);stroke:var(--series-3)} .ch-s4{fill:var(--series-4);stroke:var(--series-4)}
+path.ch-s1:not(.ch-line),path.ch-s2:not(.ch-line),path.ch-s3:not(.ch-line),path.ch-s4:not(.ch-line){stroke:none}
+.ch-mute{fill:var(--line-strong)!important;opacity:.55}
+.ch-line{fill:none!important;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.ch-area{opacity:.12}
+.ch-dot{stroke:var(--bg)!important;stroke-width:3}
+.ch-hit{fill:transparent;stroke:none}
+pre.mermaid{visibility:hidden;margin:0}
+pre.mermaid.mermaid-failed{visibility:visible;white-space:pre;font:400 var(--fs-small)/1.5 var(--font-mono);color:var(--text-dim);background:var(--surface);border:1px dashed var(--line-strong);border-radius:var(--radius);padding:24px;overflow:hidden}
+.mermaid-svg{min-height:0;display:flex;justify-content:center}
+.mermaid-svg svg{height:auto;max-height:720px}
+.brand-logo{width:400px;height:160px;flex:none;align-self:flex-start;padding:16px 22px;margin-left:-22px;border-radius:14px;background:var(--logo,none) left center/contain no-repeat content-box,var(--logo-bg,transparent)}
+.slide::after{content:"";position:absolute;top:28px;right:calc(var(--pad-x) - 12px);width:230px;height:76px;padding:6px 10px;border-radius:10px;
+  background:var(--logo,none) center/contain no-repeat content-box,var(--logo-bg,transparent);pointer-events:none}
+.slide.l-cover::after,.slide.no-logo::after,.slide.bleed::after{display:none}
+.l-diagram .fig{flex:1;min-height:0;justify-content:center}
+.l-diagram .fig > svg{max-height:700px}
+
+/* === 7. MODO LECTOR (móvil: columna única con scroll) === */
+.reader body{overflow:auto;height:auto}
+.reader .deck{position:static;background:var(--bg)}
+.reader .stage{position:static;width:auto;height:auto;transform:none!important}
+.reader{--fs-hero:clamp(2.3rem,11vw,3.4rem);--fs-h1:clamp(1.9rem,8.5vw,2.8rem);--fs-h2:clamp(1.55rem,6.6vw,2.1rem);--fs-h3:1.25rem;
+  --fs-lead:1.12rem;--fs-body:1.02rem;--fs-small:.8rem;--fs-stat:clamp(2.6rem,13vw,3.6rem);--fs-code:.78rem;--pad-x:20px;--pad-y:44px;--gap:22px}
+.reader .slide{position:relative;inset:auto;width:auto;height:auto;min-height:0;visibility:visible;opacity:1;transform:none;border-bottom:1px solid var(--line);transition:none}
+.reader .reveal{opacity:1;transform:none;transition:none}
+.reader .l-split,.reader .l-split.flip,.reader .stats,.reader .cards,.reader .compare,.reader .steps{display:grid;grid-template-columns:1fr!important;gap:22px}
+.reader .l-split.flip > :first-child{order:0}
+.reader .l-bento .bento,.reader .l-sidebar{display:grid;grid-template-columns:1fr;grid-auto-rows:auto;gap:22px}
+.reader .bento > *{grid-column:auto!important;grid-row:auto!important}
+.reader .bento .cell{padding:22px}
+.reader .bento .span-2x2 h3{font-size:1.25rem}
+.reader .l-sidebar .stack{gap:22px}
+.reader .walk,.reader .worked,.reader .pred,.reader .case{display:grid;grid-template-columns:1fr;gap:22px}
+.reader .l-evidence .body{flex-direction:column}
+.reader .l-evidence .focus{flex:none}
+.reader .facts div{grid-template-columns:1fr;gap:6px}
+.reader .timeline{display:flex;flex-direction:column;gap:22px;padding-left:44px}
+.reader .timeline::before{left:11px;right:auto;top:0;bottom:0;width:3px;height:auto;margin:0}
+.reader .timeline li{display:block;position:relative}
+.reader .timeline li::after{position:absolute;left:-44px;top:4px}
+.reader .timeline li > .t-body{padding:0}
+.reader .l-section .sec-num{font-size:5rem}
+.reader .corte-facts{grid-template-columns:1fr}
+.reader .card{padding:22px}
+.reader .steps h3{font-size:1.15rem}.reader .steps p{font-size:.95rem}
+.reader .l-quote blockquote::before{font-size:5rem}
+.reader .term pre{overflow-x:auto;padding:18px}
+.reader .tbl{display:block;overflow-x:auto}
+.reader .l-image.bleed{padding:var(--pad-y) var(--pad-x)}
+.reader .l-image.bleed .head{position:static;padding:0;background:none;color:inherit}
+.reader .l-image.bleed figcaption{position:static}
+.reader .hud-row,.reader .hint{display:none}
+.reader .hud{top:0;bottom:auto}
+.reader .touch-nav{display:none}
+.reader .slide::after{top:12px;right:16px;width:110px;height:40px;padding:4px 6px}
+.reader .slide{background:var(--bg)}
+.reader .fig,.reader .mermaid-svg{overflow-x:auto}
+.reader .fig > svg,.reader .chart{min-width:620px}
+.reader .mermaid-svg svg{min-width:min(620px,100%)}
+.reader .ico-badge{width:56px;height:56px;font-size:28px}
+.reader .brand-logo{width:200px;height:72px}
+
+/* === 8. IMPRESIÓN / PDF (P o Ctrl+P → Guardar como PDF) === */
+@page{size:1920px 1080px;margin:0}
+@media print{
+  html,body{width:1920px!important;height:auto!important;overflow:visible!important;background:var(--bg)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .deck{position:static!important;background:none!important}
+  .stage{position:static!important;transform:none!important;width:1920px!important;height:auto!important}
+  .slide{position:relative!important;inset:auto!important;width:1920px!important;height:1080px!important;visibility:visible!important;opacity:1!important;transform:none!important;transition:none!important;break-after:page;page-break-after:always}
+  .reveal{opacity:1!important;transform:none!important;transition:none!important}
+  .hud,.hint,.overview,.presenter,.blackout,.toast,.touch-nav{display:none!important}
+}
+</style>
+</head>
+<body>
+<!-- ÍCONOS: <svg class="ico"><use href="#i-check"/></svg> · ids: check, x, arrow, alert, info, user, users, code, terminal, database, server, cloud, lock, bolt, clock, chart, sliders, book, branch, bulb, target, search, globe, cpu, school, robot, layers, flow -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5L2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.2v.3"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.6v.4"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M2.5 19.5c1-3.5 3.5-5 6.5-5s5.5 1.5 6.5 5M15.5 5.2a3.5 3.5 0 0 1 0 6.6M17.5 14.6c2 .7 3.4 2.3 4 4.9"/></symbol>
+<symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7L3.5 12l5 5M15.5 7l5 5-5 5M13.5 4.5l-3 15"/></symbol>
+<symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="M7 10l3 2.5L7 15M12.5 15.5H17"/></symbol>
+<symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7.5" ry="2.8"/><path d="M4.5 6v12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8V6M4.5 12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/></symbol>
+<symbol id="i-server" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="7" rx="1.5"/><rect x="3.5" y="13" width="17" height="7" rx="1.5"/><path d="M7.5 7.5h.01M7.5 16.5h.01"/></symbol>
+<symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18.5h10a4 4 0 0 0 .6-7.95A5.5 5.5 0 0 0 7 9.6a4.5 4.5 0 0 0 0 8.9z"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5v-3a4 4 0 0 1 8 0v3"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2.5L5 13.5h6l-1 8 8-11h-6z"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 4v16h16M8 16v-4M12 16V8M16 16v-6"/></symbol>
+<symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4.5h6a2 2 0 0 1 2 2V20a1.5 1.5 0 0 0-1.5-1.5H4zM20 4.5h-6a2 2 0 0 0-2 2V20a1.5 1.5 0 0 1 1.5-1.5H20z"/></symbol>
+<symbol id="i-branch" viewBox="0 0 24 24"><circle cx="6" cy="5.5" r="2"/><circle cx="6" cy="18.5" r="2"/><circle cx="18" cy="7" r="2"/><path d="M6 7.5v9M18 9v1a4 4 0 0 1-4 4H9a3 3 0 0 0-3 3"/></symbol>
+<symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></symbol>
+<symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="1.5"/><rect x="9.5" y="9.5" width="5" height="5"/><path d="M9 2.5v4M15 2.5v4M9 17.5v4M15 17.5v4M2.5 9h4M2.5 15h4M17.5 9h4M17.5 15h4"/></symbol>
+<symbol id="i-school" viewBox="0 0 24 24"><path d="M2.5 9L12 4.5 21.5 9 12 13.5zM6.5 11v4.5c1.5 1.5 3.5 2.3 5.5 2.3s4-.8 5.5-2.3V11M21.5 9v5"/></symbol>
+<symbol id="i-robot" viewBox="0 0 24 24"><rect x="4.5" y="8" width="15" height="11" rx="2.5"/><path d="M12 4.5V8M9 13h.01M15 13h.01M9.5 16.2h5M2.5 12.5v3M21.5 12.5v3"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3.5l9 4.5-9 4.5-9-4.5zM3 12l9 4.5 9-4.5M3 16l9 4.5 9-4.5"/></symbol>
+<symbol id="i-flow" viewBox="0 0 24 24"><rect x="3" y="3.5" width="7" height="5" rx="1"/><rect x="14" y="15.5" width="7" height="5" rx="1"/><path d="M6.5 8.5v4a2 2 0 0 0 2 2h7.5M13.5 12l2.5 2.5-2.5 2.5"/></symbol>
+</defs></svg>
+<div class="deck" id="deck">
+<div class="stage" id="stage">
+
+<!-- ===== SLIDES (una <section class="slide l-*"> por slide) ===== -->
+
+<!-- 01 · Portada -->
+<section class="slide l-cover" data-id="portada" data-chapter="Intro" data-minutes="1">
+  <p class="kicker reveal">Evento · Fecha</p>
+  <h1 class="reveal">Título que promete un resultado</h1>
+  <p class="lead reveal">Subtítulo de una línea: para quién es y qué se lleva.</p>
+  <div class="meta reveal"><span class="pill">Ponente</span><span class="pill">github.com/tu-usuario</span></div>
+  <aside class="notes"><ul><li>Saludo y gancho en 1 frase.</li><li>Qué van a poder hacer al final.</li></ul><p><b>Transición:</b> “Empecemos por el problema.”</p></aside>
+</section>
+
+<!-- 02 · Afirmación -->
+<section class="slide l-statement" data-id="problema" data-chapter="Problema" data-tone="3" data-minutes="1.5">
+  <p class="kicker reveal"><span class="n"></span> · Problema</p>
+  <p class="claim reveal">Crees que el problema es X. <em>En realidad es Y.</em></p>
+  <p class="dim small reveal">Fuente: dato verificable o experiencia propia.</p>
+  <aside class="notes"><p>Contar la anécdota. No leer la slide.</p></aside>
+</section>
+
+<!-- 03 · Split texto + diagrama -->
+<section class="slide l-split" data-id="mecanismo" data-chapter="Mecanismo" data-tone="2" data-minutes="2">
+  <div class="col">
+    <p class="kicker reveal"><span class="n"></span> · Mecanismo</p>
+    <h2 class="reveal">El título dice la conclusión, no el tema</h2>
+    <p class="reveal">Dos o tres frases que explican lo que el diagrama muestra. La figura carga el contenido; el texto la acompaña.</p>
+  </div>
+  <figure class="fig reveal">
+    <svg viewBox="0 0 900 560" role="img" aria-label="Flujo: entrada pasa por proceso y produce salida">
+      <defs><marker id="arr" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="10" markerHeight="8" orient="auto-start-reverse"><path class="d-arrow" d="M0 0L10 4L0 8z"/></marker></defs>
+      <rect class="d-zone" x="275" y="40" width="350" height="480" rx="18"/>
+      <text class="d-label" x="295" y="74">Sistema</text>
+      <path class="d-line" d="M210 280H300" marker-end="url(#arr)"/>
+      <path class="d-line hot" d="M600 280H690" marker-end="url(#arr)"/>
+      <rect class="d-box" x="20" y="220" width="190" height="120" rx="14"/>
+      <text class="d-text" x="115" y="288" text-anchor="middle">Entrada</text>
+      <rect class="d-box tone" x="310" y="200" width="280" height="160" rx="14"/>
+      <text class="d-text" x="450" y="288" text-anchor="middle">Proceso</text>
+      <rect class="d-box fill" x="700" y="220" width="180" height="120" rx="14"/>
+      <text class="d-text on-fill" x="790" y="288" text-anchor="middle">Salida</text>
+      <text class="d-label" x="240" y="316" text-anchor="middle">lee</text>
+      <text class="d-label" x="655" y="316" text-anchor="middle">emite</text>
+    </svg>
+    <figcaption>Fig. 1 — La figura enuncia la tesis.</figcaption>
+  </figure>
+  <aside class="notes"><p>Recorrer el diagrama de izquierda a derecha.</p></aside>
+</section>
+
+<!-- 04 · Cifras -->
+<section class="slide l-stats" data-id="impacto" data-chapter="Impacto" data-tone="4" data-minutes="1.5">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Impacto</p><h2 class="reveal">Tres números que cambian la decisión</h2></header>
+  <div class="body"><div class="stats" style="--cols:3">
+    <div class="stat reveal"><b>3×</b><span>más rápido que el flujo anterior</span></div>
+    <div class="stat reveal"><b>−40%</b><span>menos errores en revisión</span></div>
+    <div class="stat reveal"><b>12 min</b><span>de setup para un equipo nuevo</span></div>
+  </div></div>
+  <aside class="notes"><p>Números de ejemplo: reemplazar por datos reales con fuente.</p></aside>
+</section>
+
+<!-- 05 · Pasos -->
+<section class="slide l-steps" data-id="flujo" data-chapter="Flujo" data-tone="2" data-minutes="2">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Flujo</p><h2 class="reveal">Cuatro pasos, siempre en este orden</h2></header>
+  <div class="body"><ol class="steps" style="--cols:4">
+    <li class="reveal"><h3>Explorar</h3><p>Leer el contexto antes de tocar nada.</p></li>
+    <li class="reveal"><h3>Preguntar</h3><p>Agrupar dudas reales, no inventar respuestas.</p></li>
+    <li class="reveal is-tone"><h3>Planear</h3><p>Acordar alcance y criterios de “listo”.</p></li>
+    <li class="reveal"><h3>Ejecutar</h3><p>Implementar y verificar contra el plan.</p></li>
+  </ol></div>
+  <aside class="notes"><ul><li>Punto clave que decir.</li><li>Dato o ejemplo exacto.</li></ul><p><b>Transición:</b> frase hacia la siguiente.</p></aside>
+</section>
+
+<!-- 06 · Antes / después -->
+<section class="slide l-compare" data-id="antes-despues" data-chapter="Cambio" data-minutes="1.5">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Cambio</p><h2 class="reveal">Antes adivinaba; ahora pregunta</h2></header>
+  <div class="body"><div class="compare">
+    <div class="card reveal"><p class="kicker" style="color:var(--text-dim)">Antes</p><h3>Elegía el stack al azar</h3><p>Supuestos invisibles que aparecían en la revisión.</p></div>
+    <div class="card reveal"><p class="kicker">Después</p><h3>Pregunta lo que falta</h3><p>Un cuestionario corto y agrupado antes de escribir código.</p></div>
+  </div></div>
+  <aside class="notes"><ul><li>Punto clave que decir.</li><li>Dato o ejemplo exacto.</li></ul><p><b>Transición:</b> frase hacia la siguiente.</p></aside>
+</section>
+
+<!-- 07 · Código / terminal -->
+<section class="slide l-code" data-id="demo" data-chapter="Demo" data-tone="4" data-badge="DEMO" data-minutes="3">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Demo</p><h2 class="reveal">Un comando para publicarlo</h2></header>
+  <div class="body"><div class="term reveal"><div class="term-bar">zsh — deck</div>
+<pre><span class="c"># sube el deck como gist secreto</span>
+<span class="k">gh</span> gist create index.html <span class="p">-d</span> <span class="s">"Mi charla"</span>
+<span class="c"># → https://gist.github.com/usuario/&lt;ID&gt;</span>
+<span class="k">open</span> <span class="s">"https://gistpreview.github.io/?&lt;ID&gt;/index.html#1"</span></pre></div></div>
+  <aside class="notes"><p><b>Demo en vivo (30 s):</b> correr el comando y abrir el link.</p></aside>
+</section>
+
+<!-- 08 · Tarjetas -->
+<section class="slide l-grid" data-id="principios" data-chapter="Principios" data-tone="3" data-minutes="2">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Principios</p><h2 class="reveal">Tres reglas que no se negocian</h2></header>
+  <div class="body"><div class="cards" style="--cols:3">
+    <div class="card reveal"><span class="ico-badge"><svg class="ico"><use href="#i-target"/></svg></span><h3>Una idea</h3><p>Si necesitas “y además”, son dos slides.</p></div>
+    <div class="card reveal is-tone"><span class="ico-badge"><svg class="ico"><use href="#i-bulb"/></svg></span><h3>Título-afirmación</h3><p>El título se entiende sin el resto de la slide.</p></div>
+    <div class="card reveal"><span class="ico-badge"><svg class="ico"><use href="#i-layers"/></svg></span><h3>Figura primero</h3><p>Si quitas el texto, el visual sigue comunicando.</p></div>
+  </div></div>
+  <aside class="notes"><ul><li>Punto clave que decir.</li><li>Dato o ejemplo exacto.</li></ul><p><b>Transición:</b> frase hacia la siguiente.</p></aside>
+</section>
+
+<!-- 09 · Tabla -->
+<section class="slide l-table" data-id="comparativa" data-chapter="Opciones" data-minutes="1.5">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Opciones</p><h2 class="reveal">La opción B gana en lo que importa</h2></header>
+  <div class="body"><table class="tbl reveal">
+    <thead><tr><th>Criterio</th><th>Opción A</th><th>Opción B</th></tr></thead>
+    <tbody><tr><td>Costo</td><td>Alto</td><td>Bajo</td></tr><tr><td>Tiempo</td><td>2 semanas</td><td>3 días</td></tr><tr><td>Riesgo</td><td>Medio</td><td>Bajo</td></tr></tbody>
+  </table></div>
+  <aside class="notes"><ul><li>Punto clave que decir.</li><li>Dato o ejemplo exacto.</li></ul><p><b>Transición:</b> frase hacia la siguiente.</p></aside>
+</section>
+
+<!-- 10 · Imagen (placeholder honesto) -->
+<section class="slide l-image" data-id="captura" data-chapter="Producto" data-minutes="1">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Producto</p><h2 class="reveal">Así se ve en la terminal</h2></header>
+  <figure class="media reveal"><div class="placeholder" style="--ratio:21/8">Captura pendiente · 16:9 · terminal con el cuestionario</div><figcaption>Reemplazar por la captura real (img embebida en base64).</figcaption></figure>
+  <aside class="notes"><ul><li>Punto clave que decir.</li><li>Dato o ejemplo exacto.</li></ul><p><b>Transición:</b> frase hacia la siguiente.</p></aside>
+</section>
+
+<!-- 11 · Cita -->
+<section class="slide l-quote" data-id="cita" data-chapter="Feedback" data-tone="2" data-minutes="1">
+  <blockquote class="reveal">Una cita corta de un usuario real dice más que tres bullets.</blockquote>
+  <cite class="reveal">— Nombre, rol (con permiso)</cite>
+  <aside class="notes"><ul><li>Punto clave que decir.</li><li>Dato o ejemplo exacto.</li></ul><p><b>Transición:</b> frase hacia la siguiente.</p></aside>
+</section>
+
+<!-- 12 · Ilustración SVG propia -->
+<section class="slide l-split flip" data-id="ilustracion" data-chapter="Arquitectura" data-tone="2" data-minutes="1.5">
+  <div class="col">
+    <p class="kicker reveal"><span class="n"></span> · Arquitectura</p>
+    <h2 class="reveal">Tres capas, una sola fuente de verdad</h2>
+    <p class="reveal">Una ilustración propia en SVG: formas simples, colores UTEZ y un solo punto focal.</p>
+  </div>
+  <figure class="fig reveal">
+    <svg viewBox="0 0 900 620" role="img" aria-label="Tres capas apiladas; la superior resaltada">
+      <path class="ill-soft" d="M450 420L790 500 450 590 110 500z"/>
+      <path class="ill-line" d="M450 420L790 500 450 590 110 500z"/>
+      <path class="ill-surface" d="M450 290L790 370 450 460 110 370z"/>
+      <path class="ill-line" d="M450 290L790 370 450 460 110 370z"/>
+      <path class="ill-tone" d="M450 160L790 240 450 330 110 240z"/>
+      <path class="ill-line" d="M450 330V420M450 460V590" stroke-dasharray="6 8"/>
+      <use href="#i-sliders" x="420" y="208" width="60" height="60" class="d-ico" style="stroke:var(--bg)"/>
+      <text class="d-label" x="820" y="246">Interfaz</text>
+      <text class="d-label" x="820" y="376">Servicios</text>
+      <text class="d-label" x="820" y="506">Datos</text>
+    </svg>
+  </figure>
+  <aside class="notes"><ul><li>Explicar por qué la capa superior es la que cambia más.</li></ul><p><b>Transición:</b> así fluye una petición.</p></aside>
+</section>
+
+<!-- 13 · Diagrama Mermaid -->
+<section class="slide l-diagram" data-id="flujo-mermaid" data-chapter="Flujo" data-tone="4" data-minutes="2">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Flujo</p><h2 class="reveal">La petición nunca toca la base sin validar</h2></header>
+  <figure class="fig reveal">
+<pre class="mermaid">
+flowchart LR
+  A[Cliente] -->|HTTPS| B(API)
+  B --> C{¿Token válido?}
+  C -->|sí| D[(Base de datos)]
+  C -->|no| E[401]
+</pre>
+  </figure>
+  <aside class="notes"><p>Recorrer el camino feliz y luego el rechazo.</p></aside>
+</section>
+
+<!-- 14 · Gráfica (svg_charts.py) -->
+<section class="slide l-split" data-id="grafica" data-chapter="Datos" data-minutes="1.5">
+  <div class="col">
+    <p class="kicker reveal"><span class="n"></span> · Datos</p>
+    <h2 class="reveal">Sep–Dic crece más que el resto del año</h2>
+    <p class="reveal">Datos de ejemplo. La gráfica sale de <code>svg_charts.py</code> y toma los colores UTEZ.</p>
+  </div>
+  <figure class="fig reveal">
+    <svg class="chart" viewBox="0 0 900 520" role="img" aria-label="Inscritos por cuatrimestre"><title>Inscritos por cuatrimestre</title><desc>2025: Ene–Abr 820, May–Ago 760, Sep–Dic 910; 2026: Ene–Abr 880, May–Ago 845, Sep–Dic 1,020</desc><rect class="ch-s1" x="0" y="14" width="18" height="18" rx="4"/><text class="ch-label" x="28" y="29">2025</text><rect class="ch-s2" x="124" y="14" width="18" height="18" rx="4"/><text class="ch-label" x="152" y="29">2026</text><line class="ch-grid" x1="72" y1="468.0" x2="876" y2="468.0"/><text class="ch-tick" x="58" y="474.0" text-anchor="end">0</text><line class="ch-grid" x1="72" y1="367.0" x2="876" y2="367.0"/><text class="ch-tick" x="58" y="373.0" text-anchor="end">300</text><line class="ch-grid" x1="72" y1="266.0" x2="876" y2="266.0"/><text class="ch-tick" x="58" y="272.0" text-anchor="end">600</text><line class="ch-grid" x1="72" y1="165.0" x2="876" y2="165.0"/><text class="ch-tick" x="58" y="171.0" text-anchor="end">900</text><line class="ch-grid" x1="72" y1="64.0" x2="876" y2="64.0"/><text class="ch-tick" x="58" y="70.0" text-anchor="end">1,200</text><text class="ch-tick" x="206.0" y="502" text-anchor="middle">Ene–Abr</text><path class="ch-s1" d="M132.5,468.0V197.93333333333334Q132.5,191.93333333333334 138.5,191.93333333333334H198.5Q204.5,191.93333333333334 204.5,197.93333333333334V468.0Z"><title>Ene–Abr · 2025: 820</title></path><text class="ch-value" x="168.5" y="179.9" text-anchor="middle">820</text><path class="ch-s2" d="M207.5,468.0V177.73333333333335Q207.5,171.73333333333335 213.5,171.73333333333335H273.5Q279.5,171.73333333333335 279.5,177.73333333333335V468.0Z"><title>Ene–Abr · 2026: 880</title></path><text class="ch-value" x="243.5" y="159.7" text-anchor="middle">880</text><text class="ch-tick" x="474.0" y="502" text-anchor="middle">May–Ago</text><path class="ch-s1" d="M400.5,468.0V218.13333333333333Q400.5,212.13333333333333 406.5,212.13333333333333H466.5Q472.5,212.13333333333333 472.5,218.13333333333333V468.0Z"><title>May–Ago · 2025: 760</title></path><text class="ch-value" x="436.5" y="200.1" text-anchor="middle">760</text><path class="ch-s2" d="M475.5,468.0V189.51666666666665Q475.5,183.51666666666665 481.5,183.51666666666665H541.5Q547.5,183.51666666666665 547.5,189.51666666666665V468.0Z"><title>May–Ago · 2026: 845</title></path><text class="ch-value" x="511.5" y="171.5" text-anchor="middle">845</text><text class="ch-tick" x="742.0" y="502" text-anchor="middle">Sep–Dic</text><path class="ch-s1" d="M668.5,468.0V167.63333333333333Q668.5,161.63333333333333 674.5,161.63333333333333H734.5Q740.5,161.63333333333333 740.5,167.63333333333333V468.0Z"><title>Sep–Dic · 2025: 910</title></path><text class="ch-value" x="704.5" y="149.6" text-anchor="middle">910</text><path class="ch-s2" d="M743.5,468.0V130.60000000000002Q743.5,124.60000000000002 749.5,124.60000000000002H809.5Q815.5,124.60000000000002 815.5,130.60000000000002V468.0Z"><title>Sep–Dic · 2026: 1,020</title></path><text class="ch-value" x="779.5" y="112.6" text-anchor="middle">1,020</text><line class="ch-axis" x1="72" y1="468" x2="876" y2="468"/></svg>
+    <figcaption>Fig. 2 — Inscritos por cuatrimestre (ejemplo).</figcaption>
+  </figure>
+  <aside class="notes"><p>Datos ilustrativos: reemplazar por cifras reales con fuente.</p></aside>
+</section>
+
+<!-- 15 · Bento -->
+<section class="slide l-bento" data-id="bento" data-chapter="Panorama" data-tone="3" data-minutes="1.5">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Panorama</p><h2 class="reveal">Una pieza manda y tres la apoyan</h2></header>
+  <div class="body"><div class="bento">
+    <div class="card cell span-2x2 reveal is-tone"><h3>La pieza principal</h3><p>La celda grande lleva la idea central; las demás son apoyo.</p></div>
+    <div class="card cell reveal"><h3>Apoyo uno</h3><p>Dato corto.</p></div>
+    <div class="card cell reveal"><h3>Apoyo dos</h3><p>Dato corto.</p></div>
+    <div class="card cell span-2x1 reveal"><h3>Apoyo tres</h3><p>Celda ancha para un detalle más largo.</p></div>
+  </div></div>
+  <aside class="notes"><ul><li>Empezar por la celda grande.</li></ul><p><b>Transición:</b> frase hacia la siguiente.</p></aside>
+</section>
+
+<!-- 16 · Barra lateral -->
+<section class="slide l-sidebar" data-id="barra-lateral" data-chapter="Panorama" data-tone="2" data-minutes="1.5">
+  <div class="col">
+    <p class="kicker reveal"><span class="n"></span> · Panorama</p>
+    <h2 class="reveal">Tres piezas que se leen de arriba abajo</h2>
+    <p class="lead reveal">Una línea de contexto a la izquierda.</p>
+  </div>
+  <div class="stack">
+    <div class="card reveal"><h3>Primero</h3><p>Qué ocurre al inicio.</p></div>
+    <div class="card reveal is-tone"><h3>Después</h3><p>El paso que cambia todo.</p></div>
+    <div class="card reveal"><h3>Al final</h3><p>Qué queda al terminar.</p></div>
+  </div>
+  <aside class="notes"><ul><li>Leer los tres elementos en orden.</li></ul><p><b>Transición:</b> frase hacia la siguiente.</p></aside>
+</section>
+
+<!-- 17 · Línea de tiempo -->
+<section class="slide l-timeline" data-id="linea-tiempo" data-chapter="Historia" data-tone="4" data-minutes="1.5">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Historia</p><h2 class="reveal">Cinco hitos en orden cronológico</h2></header>
+  <div class="body"><ol class="timeline reveal" style="--cols:5">
+    <li><div class="t-body"><span class="when">Ene</span><h3>Inicio</h3><p>Primer hito.</p></div></li>
+    <li><div class="t-body"><span class="when">Feb</span><h3>Prototipo</h3><p>Segundo hito.</p></div></li>
+    <li><div class="t-body"><span class="when">Mar</span><h3>Prueba</h3><p>Tercer hito.</p></div></li>
+    <li><div class="t-body"><span class="when">Abr</span><h3>Ajuste</h3><p>Cuarto hito.</p></div></li>
+    <li><div class="t-body"><span class="when">May</span><h3>Entrega</h3><p>Quinto hito.</p></div></li>
+  </ol></div>
+  <aside class="notes"><ul><li>Recorrer de izquierda a derecha.</li></ul><p><b>Transición:</b> frase hacia la siguiente.</p></aside>
+</section>
+
+<!-- 18 · Evidencia (afirmación + prueba visual) -->
+<section class="slide l-evidence" data-id="evidencia" data-chapter="Evidencia" data-tone="2" data-minutes="2">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Evidencia</p><h2 class="reveal">Con índice, la misma consulta tarda 70 veces menos</h2></header>
+  <div class="body">
+    <figure class="fig reveal">
+      <svg class="chart" viewBox="0 0 800 420" role="img" aria-label="Tiempo de consulta: sin índice 840 ms, con índice 12 ms"><title>Tiempo de consulta (ms)</title>
+        <line class="ch-axis" x1="150" y1="20" x2="150" y2="340"/>
+        <rect class="ch-mute" x="150" y="50" width="600" height="90" rx="6"/>
+        <rect class="ch-s1" x="150" y="210" width="9" height="90" rx="3"/>
+        <text class="ch-label" x="136" y="103" text-anchor="end">Sin índice</text>
+        <text class="ch-label" x="136" y="263" text-anchor="end">Con índice</text>
+        <text class="ch-value" x="762" y="103">840 ms</text>
+        <text class="ch-value" x="174" y="263">12 ms</text>
+      </svg>
+      <figcaption>Fig. 3 — Tiempo de una consulta (datos de ejemplo).</figcaption>
+    </figure>
+    <div class="card is-tone focus reveal"><p class="kicker">Mira esto</p><p>La barra corta es la que importa: el motor ya no recorre toda la tabla.</p></div>
+  </div>
+  <aside class="notes"><ul><li>Una sola idea: el índice evita recorrer toda la tabla.</li><li>Señala solo la barra corta; la larga queda en gris.</li></ul><p><b>Pregunta al grupo:</b> ¿qué le pasa a esta barra con diez veces más filas?</p></aside>
+</section>
+
+<!-- 19 · Recorrido de código anotado -->
+<section class="slide l-walk" data-id="recorrido" data-chapter="Código" data-tone="4" data-minutes="2.5">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Código</p><h2 class="reveal">La validación corta la petición antes de tocar la base</h2></header>
+  <div class="body"><div class="walk">
+    <div class="term reveal"><div class="term-bar">app.py</div>
+<pre><span class="ln"><span class="k">def</span> crear(datos):</span
+><span class="ln hl">    <span class="k">if not</span> datos.get(<span class="s">"correo"</span>):<b class="mk">1</b></span
+><span class="ln hl">        <span class="k">return</span> error(<span class="p">400</span>)<b class="mk">2</b></span
+><span class="ln">    fila = guardar(datos)</span
+><span class="ln hl">    <span class="k">return</span> ok(fila, <span class="p">201</span>)<b class="mk">3</b></span></pre></div>
+    <ol class="labs reveal">
+      <li><b class="mk">1</b><div><h3>Guarda de entrada</h3><p>Sin correo no hay nada que guardar.</p></div></li>
+      <li><b class="mk">2</b><div><h3>Corta temprano</h3><p>Devuelve 400 y no llega a la base.</p></div></li>
+      <li><b class="mk">3</b><div><h3>Confirma lo creado</h3><p>201 con la fila nueva.</p></div></li>
+    </ol>
+  </div></div>
+  <aside class="notes"><ul><li>Recorre 1, 2 y 3 en orden; las líneas en gris no se comentan ahora.</li><li>La etiqueta va pegada a la línea, no en una leyenda aparte.</li></ul><p><b>Transición:</b> “Ahora lo hacemos paso a paso con otro caso.”</p></aside>
+</section>
+
+<!-- 20 · Ejemplo resuelto: un paso con subobjetivo -->
+<section class="slide l-worked" data-id="paso" data-chapter="Ejemplo" data-tone="3" data-minutes="1.5">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Ejemplo resuelto · Paso 2 de 4</p><span class="subgoal reveal">Subobjetivo · Aislar la causa</span><h2 class="reveal">Reproduce el fallo con un solo caso mínimo</h2></header>
+  <div class="body"><div class="worked">
+    <dl class="sc reveal">
+      <div><dt>Qué</dt><dd>Corre la prueba que falla, sola.</dd></div>
+      <div><dt>Por qué</dt><dd>Con el resto fuera, el error ya no tiene dónde esconderse.</dd></div>
+    </dl>
+    <div class="term reveal"><div class="term-bar">Resultado intermedio</div>
+<pre><span class="k">$</span> pytest tests/test_total.py::test_iva
+<span class="p">FAILED</span> assert 116.0 == 100.0</pre></div>
+  </div>
+  <p class="verify reveal"><svg class="ico"><use href="#i-check"/></svg><span>Verifica: falla una sola prueba y el mensaje nombra el valor esperado.</span></p></div>
+  <aside class="notes"><ul><li>Mismo subobjetivo que en la práctica y la clave.</li><li>Error típico: correr todo el conjunto y perderse entre 12 fallos.</li></ul><p><b>Pausa:</b> pide la predicción antes de mostrar el resultado.</p></aside>
+</section>
+
+<!-- 21 · Predice y revela -->
+<section class="slide l-predict" data-id="predice" data-chapter="Predicción" data-tone="4" data-minutes="2">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Predice antes de ejecutar</p><h2 class="reveal">¿Qué imprime este código?</h2></header>
+  <div class="body"><div class="pred">
+    <div class="term reveal"><div class="term-bar">demo.py</div>
+<pre>a = [<span class="p">1</span>, <span class="p">2</span>, <span class="p">3</span>]
+b = a
+b.append(<span class="p">4</span>)
+<span class="k">print</span>(a)</pre></div>
+    <ol class="opts reveal">
+      <li class="opt"><b class="mk">A</b><span><code>[1, 2, 3]</code></span></li>
+      <li class="opt"><b class="mk">B</b><span><code>[1, 2, 3, 4]</code></span></li>
+      <li class="opt"><b class="mk">C</b><span>Un error de sintaxis</span></li>
+    </ol>
+  </div></div>
+  <aside class="notes"><ul><li>Voto individual, 30 s de discusión con el vecino y nuevo voto.</li><li>Distractor A = quien cree que <code>b = a</code> copia la lista.</li><li>Revelación: repite esta slide con <code>class="opt is-right"</code> en B y la salida real, intercalada con otra slide.</li></ul></aside>
+</section>
+
+<!-- 22 · Lo que parece / lo que pasa -->
+<section class="slide l-myth" data-id="mito" data-chapter="Error común" data-tone="3" data-minutes="1.5">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Error común</p><h2 class="reveal">Asignar una lista no la copia: la comparte</h2></header>
+  <div class="body"><div class="compare">
+    <div class="card reveal"><p class="kicker" style="color:var(--text-dim)">Lo que parece</p><h3><code>b = a</code> crea otra lista</h3><p>Cambiar <code>b</code> dejaría <code>a</code> intacta.</p></div>
+    <div class="card reveal"><p class="kicker">Lo que pasa</p><h3>Dos nombres, una lista</h3><p>Ambos apuntan al mismo objeto; para copiar usa <code>a.copy()</code>.</p></div>
+  </div></div>
+  <aside class="notes"><ul><li>Conecta con la slide de predicción: quien votó A sostenía el mito.</li><li>Pregunta de cierre: ¿cómo lo comprobarías con <code>id()</code>?</li></ul></aside>
+</section>
+
+<!-- 23 · Caso y contexto -->
+<section class="slide l-case" data-id="caso" data-chapter="Caso" data-tone="2" data-minutes="2">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Caso</p><h2 class="reveal">Una papelería pierde ventas porque no sabe qué le falta</h2></header>
+  <div class="body"><div class="case">
+    <dl class="facts reveal">
+      <div><dt>Quién</dt><dd>Papelería familiar de la zona (caso ilustrativo)</dd></div>
+      <div><dt>Qué pasa</dt><dd>El inventario vive en un cuaderno y se desactualiza.</dd></div>
+      <div><dt>Qué cuesta</dt><dd>Cada faltante es una venta que se va.</dd></div>
+    </dl>
+    <div class="card is-tone reveal"><p class="kicker">Tu turno</p><h3>¿Qué dato mínimo guardarías primero?</h3><p>Dos minutos en pareja.</p></div>
+  </div></div>
+  <aside class="notes"><ul><li>Reemplaza por un caso real de Morelos o del sector, con permiso y sin datos personales.</li><li>El caso abre la parada; el cierre del caso debe llegar a una decisión.</li></ul></aside>
+</section>
+
+<!-- 24 · Cierre -->
+<section class="slide l-closing" data-id="cierre" data-chapter="Cierre" data-minutes="1.5">
+  <header class="head"><p class="kicker reveal"><span class="n"></span> · Siguiente paso</p><h2 class="reveal">Llévate esto y pruébalo hoy</h2></header>
+  <div class="body"><ul class="list checklist">
+    <li class="reveal">Escribe el título de cada slide como una afirmación.</li>
+    <li class="reveal">Una idea por slide; lo demás va a las notas.</li>
+    <li class="reveal">Publica con un gist y comparte el link.</li>
+  </ul>
+  <div class="links reveal"><span class="pill">github.com/tu-usuario/repo</span><span class="pill">Slides: gistpreview.github.io/?ID</span></div></div>
+  <aside class="notes"><ul><li>Punto clave que decir.</li><li>Dato o ejemplo exacto.</li></ul><p><b>Transición:</b> frase hacia la siguiente.</p></aside>
+</section>
+
+</div>
+</div>
+<div class="hud" aria-hidden="true"><div class="hud-progress"><i></i></div><div class="hud-row"><span class="hud-badge"></span><span class="hud-chapter"></span><span class="hud-count"></span></div></div>
+<div class="hint">← → navegar · O índice · F pantalla completa · S presentador · B negro · P PDF</div>
+<div class="touch-nav"><button type="button" data-go="-1" aria-label="Anterior">‹</button><button type="button" data-go="1" aria-label="Siguiente">›</button></div>
+<div class="blackout"></div>
+
+<script>
+/* === RUNTIME DEL DECK — no tocar === */
+(() => {
+  'use strict';
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const W = 1920, H = 1080, root = document.documentElement;
+  const deck = $('#deck'), stage = $('#stage');
+  const slides = $$(':scope > .slide', stage), N = slides.length;
+  const MODE = /^#presenter/.test(location.hash) ? 'presenter' : /^#preview-/.test(location.hash) ? 'preview' : 'audience';
+  const BASE = location.href.split('#')[0];
+  const CH = 'deck:' + BASE;
+  const READER_Q = matchMedia('screen and (max-width: 760px), screen and (max-height: 480px) and (pointer: coarse)');
+  const fromHash = () => { const m = /(\d+)$/.exec(location.hash); return m ? +m[1] - 1 : 0; };
+  const clamp = i => Math.max(0, Math.min(N - 1, i | 0));
+  let idx = -1, peer = null, bc = null, digits = '', digitT, presenterUI = null;
+
+  root.classList.add('mode-' + MODE);
+  slides.forEach((s, i) => {
+    s.dataset.n = i + 1;
+    s.setAttribute('role', 'group');
+    s.setAttribute('aria-roledescription', 'slide');
+    s.setAttribute('aria-label', (i + 1) + ' / ' + N);
+    $$('.reveal', s).forEach((el, k) => el.style.setProperty('--i', k));
+    $$('.kicker .n', s).forEach(el => el.textContent = String(i + 1).padStart(2, '0'));
+  });
+
+  if (MODE !== 'preview') { try { bc = new BroadcastChannel(CH); } catch (e) {} }
+  if (MODE === 'presenter') peer = window.opener;
+  function send(msg) {
+    if (MODE === 'preview') return;
+    msg.ch = CH;
+    try { if (peer && !peer.closed) peer.postMessage(msg, '*'); } catch (e) {}
+    try { bc && bc.postMessage(msg); } catch (e) {}
+  }
+  function receive(d) {
+    if (!d || d.ch !== CH) return;
+    if (d.type === 'deck:go') show(d.i, 'remote');
+    if (d.type === 'deck:black' && MODE === 'audience') root.classList.toggle('is-black', !!d.on);
+  }
+  addEventListener('message', e => receive(e.data));
+  if (bc) bc.onmessage = e => receive(e.data);
+
+  const isReader = () => MODE === 'audience' && READER_Q.matches;
+  function fit() {
+    const reader = isReader();
+    root.classList.toggle('reader', reader);
+    if (reader) { stage.style.transform = ''; slides.forEach(s => { s.inert = false; s.removeAttribute('aria-hidden'); }); setupReader(); return; }
+    const s = Math.min(innerWidth / W, innerHeight / H);
+    stage.style.transform = `translate(${(innerWidth - W * s) / 2}px,${(innerHeight - H * s) / 2}px) scale(${s})`;
+    slides.forEach((sl, k) => { sl.inert = k !== idx; sl.setAttribute('aria-hidden', k === idx ? 'false' : 'true'); });
+  }
+
+  function show(i, reason) {
+    i = clamp(i);
+    if (i === idx) return;
+    const prev = idx; idx = i;
+    const reader = root.classList.contains('reader');
+    slides.forEach((s, k) => {
+      s.classList.toggle('active', k === i);
+      s.classList.toggle('past', k < i);
+      if (!reader) { s.inert = k !== i; s.setAttribute('aria-hidden', k === i ? 'false' : 'true'); }
+    });
+    if (MODE === 'audience') { try { history.replaceState(null, '', '#' + (i + 1)); } catch (e) {} }
+    hud();
+    if (reason !== 'remote') send({ type: 'deck:go', i });
+    if (presenterUI) presenterUI.update();
+    document.dispatchEvent(new CustomEvent('deck:slidechange', { detail: { index: i, previous: prev, total: N, slide: slides[i], reason: reason || 'nav' } }));
+  }
+  function go(i) {
+    if (root.classList.contains('reader')) { slides[clamp(i)].scrollIntoView({ behavior: 'smooth' }); return; }
+    show(i, 'nav');
+  }
+
+  function hud() {
+    const s = slides[idx];
+    $('.hud-progress i').style.width = ((idx + 1) / N * 100) + '%';
+    $('.hud-count').textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(N).padStart(2, '0');
+    $('.hud-badge').textContent = s.dataset.badge || '';
+    $('.hud-chapter').textContent = s.dataset.chapter || '';
+    root.style.setProperty('--hud-tone', getComputedStyle(s).getPropertyValue('--tone').trim() || 'var(--accent)');
+    $$('.ov-item').forEach((b, k) => b.classList.toggle('current', k === idx));
+  }
+
+  let readerReady = false;
+  function setupReader() {
+    if (readerReady) return; readerReady = true;
+    const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting && root.classList.contains('reader')) show(+en.target.dataset.n - 1, 'scroll'); }), { threshold: 0.5 });
+    slides.forEach(s => io.observe(s));
+  }
+
+  function overview(open) {
+    let ov = $('.overview');
+    if (!ov) {
+      ov = document.createElement('div'); ov.className = 'overview'; ov.setAttribute('aria-label', 'Índice de slides');
+      slides.forEach((s, i) => {
+        const b = document.createElement('button'); b.className = 'ov-item'; b.type = 'button';
+        const t = s.querySelector('h1,h2,.claim,blockquote');
+        b.innerHTML = '<span class="ov-thumb"><span class="ov-scale"></span></span><span class="ov-cap"></span>';
+        b.querySelector('.ov-cap').textContent = (i + 1) + '. ' + (t ? t.textContent.trim().slice(0, 70) : '');
+        const c = s.cloneNode(true);
+        c.classList.add('active'); c.classList.remove('past'); c.removeAttribute('data-id'); c.inert = true;
+        $$('.notes', c).forEach(n => n.remove());
+        b.querySelector('.ov-scale').appendChild(c);
+        b.addEventListener('click', () => { overview(false); go(i); });
+        ov.appendChild(b);
+      });
+      document.body.appendChild(ov);
+    }
+    if (open === undefined) open = !root.classList.contains('show-overview');
+    root.classList.toggle('show-overview', open);
+    if (open) {
+      requestAnimationFrame(() => { const th = $('.ov-thumb', ov); if (th) ov.style.setProperty('--ov-s', th.clientWidth / W); });
+      hud(); const cur = ov.children[idx]; cur && cur.focus(); cur && cur.scrollIntoView({ block: 'center' });
+    }
+  }
+
+  function toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 4200); }
+  function fullscreen() { if (document.fullscreenElement) document.exitFullscreen(); else if (root.requestFullscreen) root.requestFullscreen().catch(() => {}); }
+  function openPresenter() {
+    const w = window.open(BASE + '#presenter-' + (idx + 1), 'deck-presenter', 'width=1400,height=860');
+    if (!w) { toast('El navegador bloqueó la ventana. Permite pop-ups para este archivo y presiona S de nuevo.'); return; }
+    peer = w;
+  }
+  let blackOn = false;
+  function black() { blackOn = !blackOn; if (MODE === 'presenter') send({ type: 'deck:black', on: blackOn }); else root.classList.toggle('is-black', blackOn); }
+
+  function onKey(e) {
+    if (MODE === 'preview' || root.classList.contains('reader')) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.target.closest && e.target.closest('input,textarea,select,[contenteditable]')) return;
+    const k = e.key;
+    if (root.classList.contains('show-overview')) { if (k === 'Escape' || k === 'o' || k === 'O') { overview(false); e.preventDefault(); } return; }
+    if (/^[0-9]$/.test(k)) { digits += k; clearTimeout(digitT); digitT = setTimeout(() => digits = '', 1500); return; }
+    if (k === 'Enter' && digits) { go(+digits - 1); digits = ''; }
+    else if ((k === 'Enter' || k === ' ') && e.target.closest && e.target.closest('button,a')) return;
+    else if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(k)) go(idx + 1);
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(k)) go(idx - 1);
+    else if (k === 'Home') go(0);
+    else if (k === 'End') go(N - 1);
+    else if ((k === 'o' || k === 'O' || k === 'Escape') && MODE === 'audience') overview(true);
+    else if ((k === 'f' || k === 'F') && MODE === 'audience') fullscreen();
+    else if ((k === 'p' || k === 'P') && MODE === 'audience') window.print();
+    else if ((k === 's' || k === 'S') && MODE === 'audience') openPresenter();
+    else if (k === 'b' || k === 'B' || k === '.') black();
+    else if ((k === 'r' || k === 'R') && presenterUI) presenterUI.reset();
+    else if (k === '?' && MODE === 'audience') { const h = $('.hint'); h.classList.toggle('gone'); }
+    else return;
+    e.preventDefault();
+  }
+  addEventListener('keydown', onKey);
+
+  if (MODE === 'audience') {
+    deck.addEventListener('click', e => {
+      if (root.classList.contains('reader')) return;
+      if (e.target.closest('a,button,input,textarea,select,summary,label,[contenteditable],.no-nav')) return;
+      if (String(getSelection())) return;
+      const x = e.clientX / innerWidth;
+      if (x > 2 / 3) go(idx + 1); else if (x < 1 / 3) go(idx - 1);
+    });
+    $$('.touch-nav button').forEach(b => b.addEventListener('click', () => go(idx + +b.dataset.go)));
+    let tx = 0, ty = 0, track = false;
+    deck.addEventListener('touchstart', e => {
+      track = false;
+      if (root.classList.contains('reader') || e.touches.length !== 1) return;
+      if (window.visualViewport && visualViewport.scale > 1.05) return;
+      for (let el = e.target; el && el !== deck; el = el.parentElement) if (el.scrollWidth > el.clientWidth + 2 && /(auto|scroll)/.test(getComputedStyle(el).overflowX)) return;
+      tx = e.touches[0].clientX; ty = e.touches[0].clientY; track = true;
+    }, { passive: true });
+    deck.addEventListener('touchend', e => {
+      if (!track) return; track = false;
+      const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > 1.5 * Math.abs(dy)) go(idx + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+    let awakeT;
+    addEventListener('mousemove', () => { root.classList.add('awake'); clearTimeout(awakeT); awakeT = setTimeout(() => root.classList.remove('awake'), 2000); });
+    setTimeout(() => { const h = $('.hint'); h && h.classList.add('gone'); }, 4000);
+    addEventListener('hashchange', () => { const i = fromHash(); if (i !== idx) go(i); });
+  }
+
+  if (MODE === 'presenter') presenterUI = buildPresenter();
+  function buildPresenter() {
+    document.title = 'Presentador · ' + document.title;
+    const ui = document.createElement('div'); ui.className = 'presenter';
+    ui.innerHTML = '<div class="p-cur"><span class="p-lbl">Ahora</span><iframe title="Slide actual"></iframe></div>' +
+      '<div class="p-side"><div><span class="p-lbl">Siguiente</span><iframe title="Slide siguiente"></iframe><div class="p-end">Fin del deck</div></div>' +
+      '<div class="p-clock"><b class="p-elapsed">00:00</b><span class="p-pace"></span><button type="button">Reiniciar (R)</button></div>' +
+      '<div class="p-notes"></div></div>' +
+      '<div class="p-bar"><span class="p-count"></span><span class="p-chapter"></span><span>← → navegar · B negro · R timer</span><span class="p-status"></span></div>';
+    document.body.appendChild(ui);
+    const [fc, fn] = $$('iframe', ui), end = $('.p-end', ui);
+    const start = fromHash();
+    fc.src = BASE + '#preview-' + (start + 1);
+    fn.src = BASE + '#preview-' + Math.min(N, start + 2);
+    const mins = slides.map(s => parseFloat(s.dataset.minutes) || 0);
+    const planned = mins.reduce((a, b) => a + b, 0);
+    let t0 = Date.now();
+    const fmt = sec => { const a = Math.abs(sec); return (sec < 0 ? '−' : '') + String(Math.floor(a / 60)).padStart(2, '0') + ':' + String(Math.floor(a % 60)).padStart(2, '0'); };
+    function tick() {
+      const el = (Date.now() - t0) / 1000;
+      $('.p-elapsed', ui).textContent = fmt(el);
+      const pace = $('.p-pace', ui);
+      if (planned) {
+        const due = mins.slice(start, idx).reduce((a, b) => a + b, 0) * 60, diff = el - due;
+        pace.textContent = (Math.abs(diff) < 30 ? 'a tiempo' : diff > 0 ? fmt(diff) + ' atrasado' : fmt(-diff) + ' adelantado') + ' · plan ' + fmt(planned * 60);
+        pace.className = 'p-pace ' + (diff > 30 ? 'late' : diff < -30 ? 'early' : '');
+      }
+      const st = $('.p-status', ui), alive = peer && !peer.closed;
+      st.textContent = alive ? '● conectado' : '○ sin ventana de audiencia';
+      st.className = 'p-status' + (alive ? '' : ' off');
+    }
+    setInterval(tick, 500);
+    $('button', ui).addEventListener('click', () => { t0 = Date.now(); tick(); });
+    return {
+      reset() { t0 = Date.now(); tick(); },
+      update() {
+        const post = (f, i) => { try { f.contentWindow.postMessage({ type: 'deck:go', i, ch: CH }, '*'); } catch (e) {} };
+        post(fc, idx);
+        const hasNext = idx + 1 < N;
+        fn.style.display = hasNext ? '' : 'none'; end.style.display = hasNext ? 'none' : 'grid';
+        if (hasNext) post(fn, idx + 1);
+        const n = slides[idx].querySelector('.notes');
+        $('.p-notes', ui).innerHTML = n ? n.innerHTML : '<p style="color:#888">Sin notas para esta slide.</p>';
+        $('.p-count', ui).textContent = (idx + 1) + ' / ' + N;
+        $('.p-chapter', ui).textContent = slides[idx].dataset.chapter || '';
+        tick();
+      }
+    };
+  }
+
+  const mmd = $$('pre.mermaid', stage);
+  if (mmd.length) renderMermaid(mmd);
+  async function renderMermaid(nodes) {
+    try {
+      if (!window.mermaid) await new Promise((ok, ko) => { const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js'; sc.onload = ok; sc.onerror = ko; document.head.appendChild(sc); });
+      const cs = getComputedStyle(root), v = n => cs.getPropertyValue(n).trim();
+      window.mermaid.initialize({ startOnLoad: false, theme: 'base', securityLevel: 'strict', htmlLabels: false,
+        flowchart: { htmlLabels: false, curve: 'basis', padding: 20, nodeSpacing: 60, rankSpacing: 70 },
+        themeVariables: { darkMode: false, background: v('--bg'), fontFamily: v('--font-body'), fontSize: '24px',
+          primaryColor: v('--surface-2'), primaryTextColor: v('--text'), primaryBorderColor: v('--accent'),
+          secondaryColor: v('--surface'), secondaryBorderColor: v('--line-strong'), secondaryTextColor: v('--text'),
+          tertiaryColor: v('--bg'), tertiaryBorderColor: v('--line'), tertiaryTextColor: v('--text'),
+          mainBkg: v('--surface-2'), nodeBorder: v('--accent'), clusterBkg: v('--surface'), clusterBorder: v('--line-strong'),
+          lineColor: v('--line-strong'), textColor: v('--text'), titleColor: v('--text'), edgeLabelBackground: v('--bg'),
+          noteBkgColor: v('--surface'), noteBorderColor: v('--line-strong'), noteTextColor: v('--text'),
+          actorBkg: v('--surface-2'), actorBorder: v('--accent'), actorTextColor: v('--text'), signalColor: v('--text'), signalTextColor: v('--text'),
+          labelBoxBkgColor: v('--surface'), labelTextColor: v('--text'), loopTextColor: v('--text'), activationBkgColor: v('--surface'),
+          pie1: v('--series-1'), pie2: v('--series-2'), pie3: v('--series-3'), pie4: v('--series-4'),
+          git0: v('--series-1'), git1: v('--series-2'), git2: v('--series-3'), git3: v('--series-4'), git4: v('--accent'), git5: v('--accent-2'), git6: v('--accent-3'), git7: v('--accent-4'),
+          gitBranchLabel0: '#ffffff', gitBranchLabel1: '#ffffff', gitBranchLabel2: '#ffffff', gitBranchLabel3: '#ffffff', gitBranchLabel4: v('--bg'), gitBranchLabel5: v('--bg'), gitBranchLabel6: v('--bg'), gitBranchLabel7: v('--bg'),
+          commitLabelColor: v('--text'), commitLabelBackground: v('--bg'), commitLabelFontSize: '18px', tagLabelColor: v('--bg'), tagLabelBackground: v('--accent'), tagLabelBorder: v('--accent') },
+        gitGraph: { rotateCommitLabel: false, showCommitLabel: true, mainBranchName: 'main' } });
+      const tag = Date.now().toString(36);
+      let k = 0;
+      for (const pre of nodes) {
+        const src = pre.textContent.trim();
+        const { svg } = await window.mermaid.render('mmd-' + tag + '-' + (++k), src);
+        const d = document.createElement('div'); d.className = 'mermaid-svg'; d.dataset.src = src; d.innerHTML = svg;
+        const el = d.querySelector('svg'), vb = el && el.viewBox && el.viewBox.baseVal;
+        if (vb && vb.width) {  // agranda diagramas chicos (gitGraph usa letra pequeña); CSS limita al ancho/alto disponibles
+          const cap = /gitGraph/i.test(el.getAttribute('aria-roledescription') || '') ? 2.6 : 1.5;
+          el.style.maxWidth = '100%'; el.style.width = Math.round(vb.width * cap) + 'px';
+        }
+        pre.replaceWith(d);
+      }
+      root.dataset.mermaid = 'done';
+    } catch (e) {
+      root.dataset.mermaid = 'error';
+      nodes.forEach(p => p.isConnected && p.classList.add('mermaid-failed'));
+      console.warn('Mermaid no disponible (sin red): con conexión, ejecuta uv run slides-mermaid para incrustar los diagramas.', e);
+    }
+  }
+
+  addEventListener('resize', fit);
+  READER_Q.addEventListener && READER_Q.addEventListener('change', fit);
+  fit();
+  show(fromHash(), 'init');
+  if (root.classList.contains('reader') && idx > 0) slides[idx].scrollIntoView();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  window.deck = { go, next: () => go(idx + 1), prev: () => go(idx - 1), get index() { return idx; }, count: N, slides };
+})();
+</script>
+</body>
+</html>

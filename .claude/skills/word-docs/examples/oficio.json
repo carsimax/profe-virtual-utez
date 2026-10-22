@@ -1,0 +1,48 @@
+{
+ "preset": "utez",
+ "meta": {
+  "title": "Oficio",
+  "institution": "Universidad Tecnológica Emiliano Zapata del Estado de Morelos",
+  "headerText": "División Académica de TI"
+ },
+ "body": [
+  {
+   "type": "p",
+   "align": "right",
+   "text": "Emiliano Zapata, Morelos, a 15 de octubre de 2026\n"
+  },
+  {
+   "type": "p",
+   "align": "right",
+   "text": "**Oficio núm.** DATI/123/2026"
+  },
+  {
+   "type": "p",
+   "text": "**Asunto:** Solicitud de laboratorio"
+  },
+  {
+   "type": "p",
+   "text": "**[Nombre del destinatario]**\nCoordinación de Laboratorios\nPresente"
+  },
+  "Por medio del presente, solicito el uso del laboratorio de cómputo 3 los días martes de 10:00 a 12:00 h durante el periodo septiembre–diciembre de 2026, para las prácticas de la asignatura **Desarrollo de Software** del grupo 3° A.\n\nSin otro particular, reciba un cordial saludo.",
+  {
+   "type": "p",
+   "text": "**Atentamente**",
+   "align": "center"
+  },
+  {
+   "type": "signatures",
+   "people": [
+    {
+     "name": "[Nombre del docente]",
+     "role": "Profesor de tiempo completo"
+    }
+   ]
+  },
+  {
+   "type": "p",
+   "style": "small",
+   "text": "c.c.p. Dirección de División · Archivo"
+  }
+ ]
+}
